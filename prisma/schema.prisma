@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int         @id @default(autoincrement())
+  nome           String
+  email          String      @unique
+  senha          String
+  dataNascimento DateTime?
+  criadoEm       DateTime    @default(now())
+  atualizadoEm   DateTime    @updatedAt
+  password       String
+  biometrias     Biometria[]
+  documentos     Document[]
+}
+
+model Biometria {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  tipoBiometria    String
+  dadosBiometricos Bytes
+  criadoEm         DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id               Int       @id @default(autoincrement())
+  userId           Int
+  tipoDocumento    String
+  numeroDocumento  String
+  validade         DateTime?
+  arquivoDocumento Bytes
+  criadoEm         DateTime  @default(now())
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
