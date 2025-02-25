@@ -33,7 +33,7 @@ export class BiometriaService {
         const req = await this.prismaService.biometria.create({
           data: {
             userId: id,
-            tipoBiometria: metadata.tipo_biometria,
+            tipoBiometria: metadata.tipoBiometria,
             dadosBiometricos: JSON.stringify(urls),
           },
         });
@@ -56,7 +56,7 @@ export class BiometriaService {
             },
             data: {
               userId: id,
-              tipoBiometria: metadata.tipo_biometria,
+              tipoBiometria: metadata.tipoBiometria,
               dadosBiometricos: JSON.stringify(urls),
             },
           });
@@ -68,7 +68,7 @@ export class BiometriaService {
             },
             data: {
               userId: id,
-              tipoBiometria: metadata.tipo_biometria,
+              tipoBiometria: metadata.tipoBiometria,
               dadosBiometricos: JSON.stringify(urls),
             },
           });

@@ -21,13 +21,13 @@ export class UserService {
 
       const UsuarioExist = await this.prismaService.user.findFirst({
         where: {
-          email: dados.email,
+          cpf: dados.cpf,
         },
       });
 
       if (UsuarioExist) {
         const retorno: ErrorUserEntity = {
-          message: 'Email já cadastrado',
+          message: 'CPF já cadastrado',
         };
         throw new HttpException(retorno, 400);
       }
@@ -41,6 +41,7 @@ export class UserService {
             email: dados.email,
             senha: dados.password,
             password: hashedPassword,
+            cpf: dados.cpf,
           },
         }),
       );
@@ -54,7 +55,6 @@ export class UserService {
 
       return plainToClass(User, req);
     } catch (error) {
-      console.log(error);
       const retorno: ErrorUserEntity = {
         message: error instanceof Error ? error.message : 'Erro desconhecido',
       };
