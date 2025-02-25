@@ -16,6 +16,7 @@ model User {
   criadoEm       DateTime    @default(now())
   atualizadoEm   DateTime    @updatedAt
   password       String
+  cpf            String      @unique(map: "user_unique")
   biometrias     Biometria[]
   documentos     Document[]
 }

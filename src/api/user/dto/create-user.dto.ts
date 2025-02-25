@@ -47,4 +47,14 @@ export class CreateUserDto {
   )
   @IsNotEmpty({ message: 'A data de nascimento não pode ser vazia' })
   data_nascimento: string;
+
+  @ApiProperty({
+    description: 'CPF do Usuario',
+    example: '123.456.789-00',
+    type: String,
+    required: true,
+  })
+  @IsString({ message: 'O CPF tem que ser uma string' })
+  @IsNotEmpty({ message: 'O CPF nao pode ser vazio' })
+  cpf: string;
 }

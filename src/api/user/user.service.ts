@@ -21,7 +21,7 @@ export class UserService {
 
       const UsuarioExist = await this.prismaService.user.findFirst({
         where: {
-          email: dados.email,
+          cpf: dados.cpf,
         },
       });
 
@@ -41,6 +41,7 @@ export class UserService {
             email: dados.email,
             senha: dados.password,
             password: hashedPassword,
+            cpf: dados.cpf,
           },
         }),
       );
