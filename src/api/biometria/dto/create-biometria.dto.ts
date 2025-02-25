@@ -19,7 +19,7 @@ export class CreateBiometriaDto {
     required: true,
   })
   @IsNotEmpty({ message: 'O biometria nao pode ser vazio' })
-  tipo_biometria: string;
+  tipoBiometria: string;
 
   @ApiProperty({
     description: 'Dados Biometricos',

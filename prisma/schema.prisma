@@ -39,5 +39,6 @@ model Document {
   validade         DateTime?
   arquivoDocumento Bytes
   criadoEm         DateTime  @default(now())
+  atualizadoEm     DateTime @updatedAt
   user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

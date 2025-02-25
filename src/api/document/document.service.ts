@@ -4,7 +4,7 @@ import { UpdateDocumentDto } from './dto/update-document.dto';
 
 @Injectable()
 export class DocumentService {
-  create(createDocumentDto: CreateDocumentDto) {
+  async create(file : Express.Multer.File, metadata: CreateDocumentDto) {
     return 'This action adds a new document';
   }
 
