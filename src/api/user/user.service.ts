@@ -27,7 +27,7 @@ export class UserService {
 
       if (UsuarioExist) {
         const retorno: ErrorUserEntity = {
-          message: 'Email já cadastrado',
+          message: 'CPF já cadastrado',
         };
         throw new HttpException(retorno, 400);
       }
@@ -55,7 +55,6 @@ export class UserService {
 
       return plainToClass(User, req);
     } catch (error) {
-      console.log(error);
       const retorno: ErrorUserEntity = {
         message: error instanceof Error ? error.message : 'Erro desconhecido',
       };
