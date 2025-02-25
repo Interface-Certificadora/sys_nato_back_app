@@ -44,8 +44,8 @@ export class UserController {
     description: 'Nenhum usuário encontrado',
     type: ErrorUserEntity,
   })
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    return await this.userService.findAll();
   }
 
   @Get(':id')
