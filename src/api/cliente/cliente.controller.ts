@@ -95,4 +95,19 @@ export class ClienteController {
   remove(@Param('id') id: string) {
     return this.clienteService.remove(+id);
   }
+
+  @Get('/cpf/:cpf')
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna o cliente pelo cpf',
+    type: Cliente,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Erro ao retornar o cliente pelo cpf',
+    type: ErrorClienteEntity,
+  })
+  async findOneByCpf(@Param('cpf') cpf: string) {
+    return await this.clienteService.findOneByCpf(cpf);
+  }
 }
