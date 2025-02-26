@@ -44,8 +44,8 @@ export class BiometriaController {
         metadata: {
           type: 'string',
           description:
-            'Metadados do vídeo em formato JSON ex: {"userId": 1, "tipoBiometria": "digital"}',
-          example: JSON.stringify({ userId: 1, tipoBiometria: 'digital' }),
+            'Metadados do vídeo em formato JSON ex: {"clienteId": 1, "tipoBiometria": "digital"}',
+          example: JSON.stringify({ clienteId: 1, tipoBiometria: 'digital' }),
         },
       },
       required: ['file', 'metadata'],

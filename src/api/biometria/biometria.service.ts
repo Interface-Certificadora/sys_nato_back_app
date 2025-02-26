@@ -14,7 +14,7 @@ const UPLOADS_FOLDER = path.join('./videos');
 export class BiometriaService {
   constructor(private readonly prismaService: PrismaService) {}
   async create(file: Express.Multer.File, metadata: CreateBiometriaDto) {
-    const id = metadata.userId;
+    const id = metadata.clienteId;
     const baseUrl = process.env.API_ROUTE;
 
     const deleteUrl = `${baseUrl}/biometria/delete/${file.filename}`;
@@ -32,7 +32,7 @@ export class BiometriaService {
       if (!Exist) {
         const req = await this.prismaService.biometria.create({
           data: {
-            userId: id,
+            clienteId: id,
             tipoBiometria: metadata.tipoBiometria,
             dadosBiometricos: JSON.stringify(urls),
           },
@@ -55,7 +55,7 @@ export class BiometriaService {
               id: Exist.id,
             },
             data: {
-              userId: id,
+              clienteId: id,
               tipoBiometria: metadata.tipoBiometria,
               dadosBiometricos: JSON.stringify(urls),
             },
@@ -67,7 +67,7 @@ export class BiometriaService {
               id: Exist.id,
             },
             data: {
-              userId: id,
+              clienteId: id,
               tipoBiometria: metadata.tipoBiometria,
               dadosBiometricos: JSON.stringify(urls),
             },
@@ -193,7 +193,7 @@ export class BiometriaService {
     try {
       const req = await this.prismaService.biometria.findMany({
         where: {
-          userId: id,
+          clienteId: id,
         },
       });
       if (req.length <= 0) {

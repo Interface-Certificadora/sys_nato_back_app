@@ -6,7 +6,7 @@ export class User {
   id: number;
 
   @ApiResponseProperty({ type: String })
-  name: string;
+  nome: string;
 
   @ApiResponseProperty({ type: String })
   email: string;
