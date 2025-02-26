@@ -77,6 +77,7 @@ export class BiometriaService {
       }
     } catch (error) {
       console.log(error);
+      await this.deleteFile(file.filename);
       const retorno: ErrorBiometriaEntity = {
         message: error.message,
       };
