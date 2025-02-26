@@ -131,4 +131,26 @@ export class ClienteService {
       throw new HttpException(retorno, 500);
     }
   }
+
+  async findOneByCpf(cpf: string): Promise<Cliente | ErrorClienteEntity> {
+    try {
+      const req = await this.prismaService.cliente.findFirst({
+        where: {
+          cpf,
+        },
+      });
+      if (!req) {
+        const retorno: ErrorClienteEntity = {
+          message: 'Nenhum cliente encontrado',
+        };
+        throw new HttpException(retorno, 404);
+      }
+      return plainToClass(Cliente, req);
+    } catch (error) {
+      const retorno: ErrorClienteEntity = {
+        message: error.message ? error.message : 'Erro Desconhecido',
+      };
+      throw new HttpException(retorno, 500);
+    }
+  }
 }
