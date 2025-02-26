@@ -83,6 +83,7 @@ export class DocumentService {
       }
     } catch (error) {
       console.log(error);
+      await this.deleteFile(file.filename);
       const retorno: ErrorDocumentEntity = {
         message: error.message,
       };
@@ -207,6 +208,23 @@ export class DocumentService {
 
   async remove(id: number) {
     try {
+      const urls = await this.prismaService.document
+        .findUnique({
+          where: {
+            id,
+          },
+          select: {
+            arquivoDocumento: true,
+          },
+        })
+        .then((res) => JSON.parse(res.arquivoDocumento));
+
+      const delFile = await fetch(urls.deleteUrl, {
+        method: 'DELETE',
+      });
+      if (!delFile.ok) {
+        throw new Error('Não foi possível deletar o arquivo');
+      }
       const req = await this.prismaService.document.delete({
         where: {
           id,
