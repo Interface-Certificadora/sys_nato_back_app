@@ -8,16 +8,18 @@ import {
   Delete,
   UploadedFile,
   UseInterceptors,
+  Res,
 } from '@nestjs/common';
 import { DocumentService } from './document.service';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { ApiBody, ApiConsumes, ApiResponse } from '@nestjs/swagger';
 import { ErrorDocumentEntity } from './entities/erro.document.entity';
-import { Document } from './entities/document.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { randomUUID } from 'crypto';
 import { diskStorage } from 'multer';
 import * as fs from 'fs';
+import { Response } from 'express';
+import { Document } from './entities/document.entity';
 
 const UPLOADS_FOLDER = './documents';
 if (!fs.existsSync(UPLOADS_FOLDER)) {
@@ -54,8 +56,16 @@ export class DocumentController {
       required: ['file', 'metadata'],
     },
   })
-  @ApiResponse({ status: 201, description: 'Vídeo enviado com sucesso' })
-  @ApiResponse({ status: 400, description: 'Erro ao salvar o vídeo' })
+  @ApiResponse({
+    status: 201,
+    description: 'Arquivo salvo com sucesso',
+    type: Document,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Erro ao salvar o Arquivo',
+    type: ErrorDocumentEntity,
+  })
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -76,26 +86,112 @@ export class DocumentController {
     return this.documentService.create(file, JSON.parse(data.metadata));
   }
 
+  @Get('download/:filename')
+  @ApiResponse({
+    status: 200,
+    description: 'Arquivo encontrado para download',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Arquivo não encontrado',
+    type: ErrorDocumentEntity,
+  })
+  async downloadFile(
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ) {
+    return await this.documentService.downloadFile(filename, res);
+  }
+
+  @Get('view/:filename')
+  @ApiResponse({
+    status: 200,
+    description: 'Arquivo encontrado para visualização',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Arquivo não encontrado',
+    type: ErrorDocumentEntity,
+  })
+  async viewFile(@Param('filename') filename: string, @Res() res: Response) {
+    return await this.documentService.viewFile(filename, res);
+  }
+
+  @Delete('delete/:filename')
+  @ApiResponse({
+    status: 200,
+    description: 'Documento excluido com sucesso',
+    type: Boolean,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Biometria nao encontrada',
+    type: ErrorDocumentEntity,
+  })
+  async deleteFile(@Param('filename') filename: string) {
+    return await this.documentService.deleteFile(filename);
+  }
+
   @Get()
-  findAll() {
-    return this.documentService.findAll();
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna uma lista de biometrias',
+    type: [Document],
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Nenhum biometria encontrada',
+    type: ErrorDocumentEntity,
+  })
+  async findAll() {
+    return await this.documentService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.documentService.findOne(+id);
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna um documento',
+    type: Document,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Documento nao encontrado',
+    type: ErrorDocumentEntity,
+  })
+  async findOne(@Param('id') id: string) {
+    return await this.documentService.findOne(+id);
   }
 
   @Patch(':id')
-  update(
+  @ApiResponse({
+    status: 200,
+    description: 'Documento atualizado com sucesso',
+    type: Document,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Erro ao Atualizar documento',
+    type: ErrorDocumentEntity,
+  })
+  async update(
     @Param('id') id: string,
     @Body() updateDocumentDto: UpdateDocumentDto,
   ) {
-    return this.documentService.update(+id, updateDocumentDto);
+    return await this.documentService.update(+id, updateDocumentDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.documentService.remove(+id);
+  @ApiResponse({
+    status: 200,
+    description: 'Documento excluido com sucesso',
+    type: Document,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Documento nao encontrado',
+    type: ErrorDocumentEntity,
+  })
+  async remove(@Param('id') id: string) {
+    return await this.documentService.remove(+id);
   }
 }
