@@ -12,12 +12,22 @@ async function bootstrap() {
     .setTitle('Sisnato app')
     .setDescription('Documentação da API Sisnato app')
     .setVersion('1.0')
+    .addServer(`http://localhost:${process.env.PORT ?? 3000}`, 'Servidor Local')
+    .addBearerAuth()
     .build();
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, documentFactory);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
   await app.listen(process.env.PORT ?? 3000).then(() => {
     console.log('');
     console.log(

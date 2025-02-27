@@ -15,7 +15,6 @@ export class LoginService {
   async login(dados: UserLogin): Promise<Login | ErrorLoginEntity> {
     try {
       const UsuarioExist = await this.GetUser(dados.email);
-      console.log('🚀 ~ LoginService ~ login ~ UsuarioExist:', UsuarioExist);
 
       if (!UsuarioExist) {
         const retorno: ErrorLoginEntity = {
@@ -47,7 +46,6 @@ export class LoginService {
         },
         token: this.jwtService.sign(Payload),
       };
-      console.log('🚀 ~ LoginService ~ login ~ data:', data);
       return data;
     } catch (error) {
       const retorno: ErrorLoginEntity = {
