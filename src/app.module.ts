@@ -7,7 +7,13 @@ import { ClienteModule } from './api/cliente/cliente.module';
 import { LoginModule } from './api/login/login.module';
 
 @Module({
-  imports: [UserModule, BiometriaModule, DocumentModule, ClienteModule, LoginModule],
+  imports: [
+    UserModule,
+    BiometriaModule,
+    DocumentModule,
+    ClienteModule,
+    LoginModule,
+  ],
   controllers: [],
   providers: [PrismaService],
 })
