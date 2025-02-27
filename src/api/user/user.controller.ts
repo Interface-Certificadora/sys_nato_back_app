@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Post,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -13,14 +14,30 @@ import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { ErrorUserEntity } from './entities/erro.user.entity';
 import { User } from './entities/user.entity';
 import { LoginGuard } from '../login/login.guard';
+import { CreateUserDto } from './dto/create-user.dto';
 
-@UseGuards(LoginGuard)
-@ApiBearerAuth()
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Post()
+  @ApiResponse({
+    status: 201,
+    description: 'Cadastra um novo usuário',
+    type: User,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+    type: ErrorUserEntity,
+  })
+  async create(@Body() createUserDto: CreateUserDto) {
+    return await this.userService.create(createUserDto);
+  }
+
   @Get()
+  @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Listagem de usuários',
@@ -36,6 +53,8 @@ export class UserController {
   }
 
   @Get(':id')
+  @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'dados do Usuário',
@@ -51,6 +70,8 @@ export class UserController {
   }
 
   @Patch(':id')
+  @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Usuário atualizado',
@@ -66,6 +87,8 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 201,
     description: 'Usuário removido',
