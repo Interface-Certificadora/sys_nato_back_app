@@ -117,4 +117,36 @@ export class ClienteController {
   remove(@Param('id') id: string) {
     return this.clienteService.remove(+id);
   }
+
+  @Patch('/link/:id')
+  // @UseGuards(LoginGuard)
+  // @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Cria nova url para cliente baixar o app',
+    type: String,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Erro ao criar nova url',
+    type: ErrorClienteEntity,
+  })
+  async link(@Param('id') id: string) {
+    return await this.clienteService.link(+id);
+  }
+
+  @Patch('/downloadstatus/:token')
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna o status do download',
+    type: String,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Erro ao retornar o status do download',
+    type: ErrorClienteEntity,
+  })
+  async downloadStatus(@Param('token') token: string) {
+    return await this.clienteService.downloadStatus(token);
+  }
 }

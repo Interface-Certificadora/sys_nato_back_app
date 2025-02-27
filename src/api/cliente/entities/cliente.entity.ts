@@ -64,6 +64,12 @@ export class Cliente {
   @ApiResponseProperty({ type: String })
   financeiro: string; // JSON stringified
 
+  @ApiResponseProperty({ type: String })
+  linkdownload: string;
+
+  @ApiResponseProperty({ type: String })
+  statusdownload: string;
+
   constructor(partial: Partial<Cliente>) {
     Object.assign(this, partial);
   }

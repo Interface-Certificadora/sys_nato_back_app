@@ -39,6 +39,8 @@ model Cliente {
   construtora       String
   empreendimento    String
   financeiro        String
+  linkdownload      String?
+  statusdownload    String?     @default("\"AGUARDANDO\"")
   biometrias        Biometria[]
   documentos        Document[]
 }
