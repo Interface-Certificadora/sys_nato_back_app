@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsNotEmpty } from 'class-validator';
 
-export class CreateBiometriaDto {
+export class CreateDocumentDto {
   @ApiProperty({
     description: 'Id do Usuario',
     example: 1,
@@ -10,7 +10,7 @@ export class CreateBiometriaDto {
   })
   @IsNumber({}, { message: 'O user_id tem que ser um number' })
   @IsNotEmpty({ message: 'O user_id nao pode ser vazio' })
-  clienteId: number;
+  userId: number;
 
   @ApiProperty({
     description: 'Tipo de Biometria',
@@ -19,16 +19,23 @@ export class CreateBiometriaDto {
     required: true,
   })
   @IsNotEmpty({ message: 'O biometria nao pode ser vazio' })
-  tipoBiometria: string;
+  tipoDocumento: string;
 
   @ApiProperty({
-    description: 'Dados Biometricos',
-    example: 'https://example.com/dados',
+    description: 'Numero do Documento',
+    example: '123456789',
     type: String,
     required: true,
   })
-  @IsOptional()
-  @IsString({ message: 'A url tem que ser uma string' })
-  @IsNotEmpty({ message: 'A url nao pode ser vazio' })
-  dadosBiometric?: string;
+  @IsNotEmpty({ message: 'O Numero do Documento nao pode ser vazio' })
+  numeroDocumento: string;
+
+  @ApiProperty({
+    description: 'Validade do Documento',
+    example: '01-01-2000',
+    type: String,
+    required: true,
+  })
+  @IsNotEmpty({ message: 'A validade nao pode ser vazia' })
+  validade: Date;
 }

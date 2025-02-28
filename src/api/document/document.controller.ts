@@ -5,38 +5,37 @@ import {
   Delete,
   Res,
   UseGuards,
-  Patch,
   Body,
+  Patch,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { BiometriaService } from './biometria.service';
-import * as path from 'path';
-import * as fs from 'fs';
+import { DocumentService } from './document.service';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiResponse,
 } from '@nestjs/swagger';
-import { Biometria } from './entities/biometria.entity';
-import { ErrorBiometriaEntity } from './entities/erro.biometria.entity';
+import { ErrorDocumentEntity } from './entities/erro.document.entity';
+import * as fs from 'fs';
 import { Response } from 'express';
+import { Document } from './entities/document.entity';
 import { LoginGuard } from '../login/login.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { randomUUID } from 'crypto';
 import { diskStorage } from 'multer';
-import { UpdateBiometriaDto } from './dto/update-biometria.dto';
+import { UpdateDocumentDto } from './dto/update-document.dto';
 
-const UPLOADS_FOLDER = path.join('./videos');
+const UPLOADS_FOLDER = './documents';
 if (!fs.existsSync(UPLOADS_FOLDER)) {
   fs.mkdirSync(UPLOADS_FOLDER, { recursive: true });
 }
 
-@Controller('biometria')
-export class BiometriaController {
-  constructor(private readonly biometriaService: BiometriaService) {}
+@Controller('document')
+export class DocumentController {
+  constructor(private readonly documentService: DocumentService) {}
 
   @Post('')
   @ApiConsumes('multipart/form-data')
@@ -47,20 +46,34 @@ export class BiometriaController {
         file: {
           type: 'string',
           format: 'binary',
-          description: 'Arquivo de vídeo MP4',
+          description: 'Arquivo de documento',
         },
         metadata: {
           type: 'string',
           description:
-            'Metadados do vídeo em formato JSON ex: {"clienteId": 1, "tipoBiometria": "digital"}',
-          example: JSON.stringify({ clienteId: 1, tipoBiometria: 'digital' }),
+            'Metadados do vídeo em formato JSON ex: {"userId": 1, "tipoDocumento": "CNH" , "numeroDocumento": "123456789" , "validade": "2023-12-31" , "arquivoDocumento": "https://example.com/document.pdf"}',
+          example: JSON.stringify({
+            userId: 1,
+            tipoDocumento: 'CNH',
+            numeroDocumento: '123456789',
+            validade: '2023-12-31',
+            arquivoDocumento: 'https://example.com/document.pdf',
+          }),
         },
       },
       required: ['file', 'metadata'],
     },
   })
-  @ApiResponse({ status: 201, description: 'Vídeo enviado com sucesso' })
-  @ApiResponse({ status: 400, description: 'Erro ao salvar o vídeo' })
+  @ApiResponse({
+    status: 201,
+    description: 'Arquivo salvo com sucesso',
+    type: Document,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Erro ao salvar o Arquivo',
+    type: ErrorDocumentEntity,
+  })
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -78,45 +91,45 @@ export class BiometriaController {
     @UploadedFile() file: Express.Multer.File,
     @Body() data: { metadata: string },
   ) {
-    return this.biometriaService.create(file, JSON.parse(data.metadata));
+    return this.documentService.create(file, JSON.parse(data.metadata));
   }
 
   @Delete('delete/:filename')
   @ApiResponse({
     status: 200,
-    description: 'Biometria excluida com sucesso',
+    description: 'Documento excluido com sucesso',
     type: Boolean,
   })
   @ApiResponse({
     status: 404,
     description: 'Biometria nao encontrada',
-    type: ErrorBiometriaEntity,
+    type: ErrorDocumentEntity,
   })
   async deleteFile(@Param('filename') filename: string) {
-    return await this.biometriaService.deleteFile(filename);
+    return await this.documentService.deleteFile(filename);
   }
 
   @Patch(':id')
   @ApiResponse({
     status: 200,
-    description: 'Biometria atualizada com sucesso',
-    type: Biometria,
+    description: 'Documento atualizado com sucesso',
+    type: Document,
   })
   @ApiResponse({
-    status: 404,
-    description: 'Biometria nao encontrada',
-    type: ErrorBiometriaEntity,
+    status: 400,
+    description: 'Erro ao Atualizar documento',
+    type: ErrorDocumentEntity,
   })
   async update(
     @Param('id') id: string,
-    @Body() updateBiometriaDto: UpdateBiometriaDto,
+    @Body() updateDocumentDto: UpdateDocumentDto,
   ) {
-    return await this.biometriaService.update(+id, updateBiometriaDto);
+    return await this.documentService.update(+id, updateDocumentDto);
   }
 
   @Get('download/:filename')
-  @ApiBearerAuth()
   @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Arquivo encontrado para download',
@@ -124,18 +137,18 @@ export class BiometriaController {
   @ApiResponse({
     status: 404,
     description: 'Arquivo não encontrado',
-    type: ErrorBiometriaEntity,
+    type: ErrorDocumentEntity,
   })
   async downloadFile(
     @Param('filename') filename: string,
     @Res() res: Response,
   ) {
-    return await this.biometriaService.downloadFile(filename, res);
+    return await this.documentService.downloadFile(filename, res);
   }
 
   @Get('view/:filename')
-  @ApiBearerAuth()
   @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Arquivo encontrado para visualização',
@@ -143,60 +156,60 @@ export class BiometriaController {
   @ApiResponse({
     status: 404,
     description: 'Arquivo não encontrado',
-    type: ErrorBiometriaEntity,
+    type: ErrorDocumentEntity,
   })
   async viewFile(@Param('filename') filename: string, @Res() res: Response) {
-    return await this.biometriaService.viewFile(filename, res);
+    return await this.documentService.viewFile(filename, res);
   }
 
   @Get()
-  @ApiBearerAuth()
   @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Retorna uma lista de biometrias',
-    type: [Biometria],
+    type: [Document],
   })
   @ApiResponse({
     status: 404,
     description: 'Nenhum biometria encontrada',
-    type: ErrorBiometriaEntity,
+    type: ErrorDocumentEntity,
   })
   async findAll() {
-    return await this.biometriaService.findAll();
+    return await this.documentService.findAll();
   }
 
   @Get(':id')
-  @ApiBearerAuth()
   @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
-    description: 'Retorna uma biometria',
-    type: Biometria,
+    description: 'Retorna um documento',
+    type: Document,
   })
   @ApiResponse({
     status: 404,
-    description: 'Biometria nao encontrada',
-    type: ErrorBiometriaEntity,
+    description: 'Documento nao encontrado',
+    type: ErrorDocumentEntity,
   })
   async findOne(@Param('id') id: string) {
-    return await this.biometriaService.findOne(+id);
+    return await this.documentService.findOne(+id);
   }
 
   @Delete(':id')
-  @ApiBearerAuth()
   @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
-    description: 'Biometria excluida com sucesso',
-    type: Biometria,
+    description: 'Documento excluido com sucesso',
+    type: Document,
   })
   @ApiResponse({
     status: 404,
-    description: 'Biometria nao encontrada',
-    type: ErrorBiometriaEntity,
+    description: 'Documento nao encontrado',
+    type: ErrorDocumentEntity,
   })
   async remove(@Param('id') id: string) {
-    return await this.biometriaService.remove(+id);
+    return await this.documentService.remove(+id);
   }
 }

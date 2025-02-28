@@ -1,18 +1,20 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Post,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { ErrorUserEntity } from './entities/erro.user.entity';
 import { User } from './entities/user.entity';
+import { LoginGuard } from '../login/login.guard';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -34,6 +36,8 @@ export class UserController {
   }
 
   @Get()
+  @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Listagem de usuários',
@@ -49,6 +53,8 @@ export class UserController {
   }
 
   @Get(':id')
+  @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'dados do Usuário',
@@ -64,6 +70,8 @@ export class UserController {
   }
 
   @Patch(':id')
+  @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Usuário atualizado',
@@ -79,6 +87,8 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 201,
     description: 'Usuário removido',

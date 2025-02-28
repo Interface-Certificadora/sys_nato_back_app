@@ -1,23 +1,23 @@
 import { ApiResponseProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
 
-export class User {
+export class Document {
   @ApiResponseProperty({ type: Number })
   id: number;
 
-  @ApiResponseProperty({ type: String })
-  nome: string;
+  @ApiResponseProperty({ type: Number })
+  userId: number;
 
   @ApiResponseProperty({ type: String })
-  email: string;
+  tipoDocumento: string;
 
   @ApiResponseProperty({ type: String })
-  @Exclude()
-  password: string;
+  numeroDocumento: string;
+
+  @ApiResponseProperty({ type: Date })
+  validade: Date;
 
   @ApiResponseProperty({ type: String })
-  @Exclude()
-  senha: string;
+  arquivoDocumento: string;
 
   @ApiResponseProperty({ type: Date })
   criadoEm: Date;
@@ -25,7 +25,7 @@ export class User {
   @ApiResponseProperty({ type: Date })
   atualizadoEm: Date;
 
-  constructor(partial: Partial<User>) {
+  constructor(partial: Partial<Document>) {
     Object.assign(this, partial);
   }
 }

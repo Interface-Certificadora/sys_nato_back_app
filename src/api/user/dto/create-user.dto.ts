@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -31,20 +31,4 @@ export class CreateUserDto {
   @IsString({ message: 'A senha tem que ser uma string' })
   @IsNotEmpty({ message: 'A senha não pode ser vazio' })
   password: string;
-
-  @ApiProperty({
-    description: 'Data de nascimento',
-    example: '2000-01-01',
-    type: String,
-    required: true,
-  })
-  @IsDateString(
-    {},
-    {
-      message:
-        'A data de nascimento deve estar no formato ISO 8601 (YYYY-MM-DD)',
-    },
-  )
-  @IsNotEmpty({ message: 'A data de nascimento não pode ser vazia' })
-  data_nascimento: string;
 }
