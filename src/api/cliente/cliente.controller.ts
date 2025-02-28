@@ -119,8 +119,8 @@ export class ClienteController {
   }
 
   @Patch('/link/:id')
-  // @UseGuards(LoginGuard)
-  // @ApiBearerAuth()
+  @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Cria nova url para cliente baixar o app',
