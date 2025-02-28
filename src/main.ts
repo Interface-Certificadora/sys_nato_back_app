@@ -13,6 +13,7 @@ async function bootstrap() {
     .setDescription('Documentação da API Sisnato app')
     .setVersion('1.0')
     .addServer(`http://localhost:${process.env.PORT ?? 3000}`, 'Servidor Local')
+    .addServer(`${process.env.MASTER}`, 'Servidor WEB')
     .addBearerAuth()
     .build();
   app.use(bodyParser.json({ limit: '50mb' }));
@@ -29,11 +30,11 @@ async function bootstrap() {
     }),
   );
 
-  // app.enableCors({
-  //   origin: '*',
-  //   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-  //   allowedHeaders: ['Content-Type', 'Authorization'],
-  // });
+  app.enableCors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   await app.listen(process.env.PORT ?? 3000).then(() => {
     console.log('');

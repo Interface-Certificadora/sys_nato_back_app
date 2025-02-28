@@ -168,6 +168,7 @@ export class ClienteService {
         },
         data: {
           linkdownload: htmlUrl,
+          statusdownload: 'AGUARDANDO',
         },
       });
       if (!req) {
