@@ -134,8 +134,8 @@ export class BiometriaController {
   }
 
   @Get('view/:filename')
-  @ApiBearerAuth()
-  @UseGuards(LoginGuard)
+  // @ApiBearerAuth()
+  // @UseGuards(LoginGuard)
   @ApiResponse({
     status: 200,
     description: 'Arquivo encontrado para visualização',

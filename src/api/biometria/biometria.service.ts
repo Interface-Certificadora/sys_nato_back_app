@@ -8,6 +8,7 @@ import { ErrorBiometriaEntity } from './entities/erro.biometria.entity';
 import * as path from 'path';
 import { Response } from 'express';
 import * as fs from 'fs';
+import * as mime from 'mime-types';
 
 const UPLOADS_FOLDER = path.join('./videos');
 @Injectable()
@@ -234,16 +235,26 @@ export class BiometriaService {
   async viewFile(filename: string, res: Response) {
     try {
       const filePath = path.join(UPLOADS_FOLDER, filename);
+
       if (!fs.existsSync(filePath)) {
         throw new Error('Arquivo nao encontrado');
       }
 
-      res.setHeader('Content-Type', 'video/mp4');
+      // Determina o tipo do arquivo
+      const mimeType = mime.lookup(filePath);
+      if (!mimeType) {
+        throw new Error('Tipo de arquivo não suportado');
+      }
+
+      // Define o cabeçalho com o tipo correto
+      res.setHeader('Content-Type', mimeType);
+
+      // Envia o arquivo
       const fileStream = fs.createReadStream(filePath);
       fileStream.pipe(res);
     } catch (error) {
       console.log(error);
-      const retorno: ErrorBiometriaEntity = {
+      const retorno = {
         message: 'Arquivo nao encontrado',
       };
       throw new HttpException(retorno, 400);
