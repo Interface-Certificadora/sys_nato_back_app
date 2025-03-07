@@ -128,8 +128,8 @@ export class DocumentController {
   }
 
   @Get('download/:filename')
-  @UseGuards(LoginGuard)
-  @ApiBearerAuth()
+  // @UseGuards(LoginGuard)
+  // @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Arquivo encontrado para download',
@@ -147,8 +147,8 @@ export class DocumentController {
   }
 
   @Get('view/:filename')
-  @UseGuards(LoginGuard)
-  @ApiBearerAuth()
+  // @UseGuards(LoginGuard)
+  // @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Arquivo encontrado para visualização',

@@ -115,8 +115,8 @@ export class BiometriaController {
   }
 
   @Get('download/:filename')
-  @ApiBearerAuth()
-  @UseGuards(LoginGuard)
+  // @ApiBearerAuth()
+  // @UseGuards(LoginGuard)
   @ApiResponse({
     status: 200,
     description: 'Arquivo encontrado para download',
