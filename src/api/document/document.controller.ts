@@ -212,4 +212,21 @@ export class DocumentController {
   async remove(@Param('id') id: string) {
     return await this.documentService.remove(+id);
   }
+
+  @Get('cliente/:clienteId')
+  @UseGuards(LoginGuard)
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna um documento',
+    type: Document,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Documento nao encontrado',
+    type: ErrorDocumentEntity,
+  })
+  async findOneByClienteId(@Param('clienteId') id: string) {
+    return await this.documentService.findOneByClienteId(+id);
+  }
 }
