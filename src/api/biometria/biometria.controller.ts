@@ -199,4 +199,21 @@ export class BiometriaController {
   async remove(@Param('id') id: string) {
     return await this.biometriaService.remove(+id);
   }
+
+  @Get('/cliente/:clienteId')
+  @ApiBearerAuth()
+  @UseGuards(LoginGuard)
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna uma biometria',
+    type: Biometria,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Biometria nao encontrada',
+    type: ErrorBiometriaEntity,
+  })
+  async findOneByClienteId(@Param('clienteId') id: string) {
+    return await this.biometriaService.findOneByClienteId(+id);
+  }
 }

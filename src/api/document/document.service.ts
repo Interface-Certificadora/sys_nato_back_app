@@ -258,4 +258,21 @@ export class DocumentService {
       return error;
     }
   }
+
+  async findOneByClienteId(id: number) {
+    try {
+      const req = await this.prismaService.document.findUnique({
+        where: {
+          clienteId: id,
+        },
+      });
+      return plainToClass(Document, req);
+    } catch (error) {
+      console.log(error);
+      const retorno: ErrorDocumentEntity = {
+        message: 'Erro ao buscar documento',
+      };
+      throw new HttpException(retorno, 400);
+    }
+  }
 }

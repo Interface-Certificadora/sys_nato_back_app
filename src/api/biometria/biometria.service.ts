@@ -249,4 +249,21 @@ export class BiometriaService {
       throw new HttpException(retorno, 400);
     }
   }
+
+  async findOneByClienteId(id: number) {
+    try {
+      const req = await this.prismaService.biometria.findUnique({
+        where: {
+          clienteId: id,
+        },
+      });
+      return plainToClass(Biometria, req);
+    } catch (error) {
+      console.log(error);
+      const retorno: ErrorBiometriaEntity = {
+        message: 'Erro ao buscar biometria',
+      };
+      throw new HttpException(retorno, 400);
+    }
+  }
 }

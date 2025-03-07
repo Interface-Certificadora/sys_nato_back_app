@@ -51,7 +51,7 @@ model Biometria {
   dadosBiometricos String
   criadoEm         DateTime @default(now())
   atualizadoEm     DateTime @updatedAt
-  clienteId        Int
+  clienteId        Int      @unique
   cliente          Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 }
 
@@ -63,6 +63,6 @@ model Document {
   arquivoDocumento String
   criadoEm         DateTime  @default(now())
   atualizadoEm     DateTime  @updatedAt
-  clienteId        Int
+  clienteId        Int       @unique
   cliente          Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 }
