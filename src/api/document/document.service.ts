@@ -14,7 +14,7 @@ const UPLOADS_FOLDER = './documents';
 export class DocumentService {
   constructor(private readonly prismaService: PrismaService) {}
   async create(file: Express.Multer.File, metadata: CreateDocumentDto) {
-    const id = metadata.userId;
+    const id = metadata.clienteId;
     const baseUrl = process.env.API_ROUTE;
     const validade = new Date(metadata.validade);
     const deleteUrl = `${baseUrl}/document/delete/${file.filename}`;
