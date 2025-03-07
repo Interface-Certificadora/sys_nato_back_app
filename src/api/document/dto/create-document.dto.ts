@@ -10,7 +10,7 @@ export class CreateDocumentDto {
   })
   @IsNumber({}, { message: 'O user_id tem que ser um number' })
   @IsNotEmpty({ message: 'O user_id nao pode ser vazio' })
-  userId: number;
+  clienteId: number;
 
   @ApiProperty({
     description: 'Tipo de Biometria',
