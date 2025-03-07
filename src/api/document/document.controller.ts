@@ -51,7 +51,7 @@ export class DocumentController {
         metadata: {
           type: 'string',
           description:
-            'Metadados do vídeo em formato JSON ex: {"userId": 1, "tipoDocumento": "CNH" , "numeroDocumento": "123456789" , "validade": "2023-12-31" , "arquivoDocumento": "https://example.com/document.pdf"}',
+            'Metadados do vídeo em formato JSON ex: {"clienteId": 1, "tipoDocumento": "CNH" , "numeroDocumento": "123456789" , "validade": "2023-12-31" , "arquivoDocumento": "https://example.com/document.pdf"}',
           example: JSON.stringify({
             userId: 1,
             tipoDocumento: 'CNH',
