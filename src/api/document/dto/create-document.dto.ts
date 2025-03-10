@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsNotEmpty } from 'class-validator';
+import { IsNumber, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateDocumentDto {
   @ApiProperty({
@@ -16,18 +16,16 @@ export class CreateDocumentDto {
     description: 'Tipo de Biometria',
     example: 'Facial',
     type: String,
-    required: true,
   })
-  @IsNotEmpty({ message: 'O biometria nao pode ser vazio' })
+  @IsOptional()
   tipoDocumento: string;
 
   @ApiProperty({
     description: 'Numero do Documento',
     example: '123456789',
     type: String,
-    required: true,
   })
-  @IsNotEmpty({ message: 'O Numero do Documento nao pode ser vazio' })
+  @IsOptional()
   numeroDocumento: string;
 
   @ApiProperty({
@@ -36,6 +34,6 @@ export class CreateDocumentDto {
     type: String,
     required: true,
   })
-  @IsNotEmpty({ message: 'A validade nao pode ser vazia' })
+  @IsOptional()
   validade: Date;
 }
