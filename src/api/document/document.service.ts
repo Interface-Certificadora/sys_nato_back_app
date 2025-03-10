@@ -33,9 +33,13 @@ export class DocumentService {
         const req = await this.prismaService.document.create({
           data: {
             clienteId: id,
-            tipoDocumento: metadata.tipoDocumento,
-            numeroDocumento: metadata.numeroDocumento,
-            validade: validade,
+            ...(metadata.tipoDocumento && {
+              tipoDocumento: metadata.tipoDocumento,
+            }),
+            ...(metadata.numeroDocumento && {
+              numeroDocumento: metadata.numeroDocumento,
+            }),
+            ...(validade && { validade: validade }),
             arquivoDocumento: JSON.stringify(urls),
           },
         });
