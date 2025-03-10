@@ -8,7 +8,7 @@ export class UpdateDocumentDto {
     type: String,
   })
   @IsOptional()
-  tipoDocumento: string;
+  tipodocumento: string;
 
   @ApiProperty({
     description: 'Numero do Documento',
@@ -16,7 +16,7 @@ export class UpdateDocumentDto {
     type: String,
   })
   @IsOptional()
-  numeroDocumento: string;
+  numerodocumento: string;
 
   @ApiProperty({
     description: 'Validade do Documento',
