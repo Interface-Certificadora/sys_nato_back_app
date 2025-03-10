@@ -19,5 +19,5 @@ export class UpdateBiometriaDto {
     type: Boolean,
   })
   @IsOptional()
-  stataus: boolean;
+  status: boolean;
 }
