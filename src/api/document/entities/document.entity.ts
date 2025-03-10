@@ -8,10 +8,10 @@ export class Document {
   userId: number;
 
   @ApiResponseProperty({ type: String })
-  tipoDocumento: string;
+  tipodocumento: string;
 
   @ApiResponseProperty({ type: String })
-  numeroDocumento: string;
+  numerodocumento: string;
 
   @ApiResponseProperty({ type: Date })
   validade: Date;
