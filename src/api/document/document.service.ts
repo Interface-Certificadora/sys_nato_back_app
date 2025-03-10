@@ -99,11 +99,11 @@ export class DocumentService {
         throw new Error('Arquivo nao encontrado');
       }
 
-      // res.setHeader(
-      //   'Content-Disposition',
-      //   `attachment; filename="${filename}"`,
-      // );
-      // res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${filename}"`,
+      );
+      res.setHeader('Content-Type', 'application/octet-stream');
 
       const fileStream = fs.createReadStream(filePath);
       fileStream.pipe(res);
