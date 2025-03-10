@@ -12,4 +12,12 @@ export class UpdateBiometriaDto {
   @IsOptional()
   @IsString({ message: 'O tipo de biometria tem que ser uma string' })
   tipoBiometria: string;
+
+  @ApiProperty({
+    description: 'Status da Biometria',
+    example: true,
+    type: Boolean,
+  })
+  @IsOptional()
+  status: boolean;
 }

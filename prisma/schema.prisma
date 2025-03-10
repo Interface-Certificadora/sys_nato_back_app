@@ -18,31 +18,31 @@ model User {
 }
 
 model Cliente {
-  id                Int         @id @default(autoincrement())
+  id                Int        @id @default(autoincrement())
   nome              String
-  cpf               String      @unique
-  email             String      @unique
+  cpf               String     @unique
+  email             String     @unique
   telefone          String
   telefone2         String?
   dtNascimento      DateTime?
   dtSolicitacao     DateTime
   idFcw             Int
-  ativo             Boolean     @default(true)
+  ativo             Boolean    @default(true)
   andamento         String
   statusPgto        String?
   valorCd           Int
   docSuspenso       String?
-  alertaNow         Boolean     @default(false)
+  alertaNow         Boolean    @default(false)
   dtCriacaoNow      DateTime?
-  statusAtendimento Boolean     @default(true)
+  statusAtendimento Boolean    @default(true)
   corretor          String
   construtora       String
   empreendimento    String
   financeiro        String
   linkdownload      String?
-  statusdownload    String?     @default("\"AGUARDANDO\"")
-  biometrias        Biometria[]
-  documentos        Document[]
+  statusdownload    String?    @default("\"AGUARDANDO\"")
+  biometrias        Biometria?
+  documentos        Document?
 }
 
 model Biometria {
@@ -57,12 +57,12 @@ model Biometria {
 
 model Document {
   id               Int       @id @default(autoincrement())
-  tipoDocumento    String
-  numeroDocumento  String
   validade         DateTime?
   arquivoDocumento String
   criadoEm         DateTime  @default(now())
   atualizadoEm     DateTime  @updatedAt
   clienteId        Int       @unique
+  tipodocumento    String?
+  numerodocumento  String?
   cliente          Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 }
