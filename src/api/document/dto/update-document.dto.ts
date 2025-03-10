@@ -25,4 +25,12 @@ export class UpdateDocumentDto {
   })
   @IsOptional()
   validade: string;
+
+  @ApiProperty({
+    description: 'Status do Documento',
+    example: true,
+    type: Boolean,
+  })
+  @IsOptional()
+  status: boolean;
 }
