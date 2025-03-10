@@ -16,7 +16,11 @@ export class DocumentService {
   async create(file: Express.Multer.File, metadata: CreateDocumentDto) {
     const id = metadata.clienteId;
     const baseUrl = process.env.API_ROUTE;
-    const validade = new Date(metadata.validade);
+    const validade = metadata.validade ? new Date(metadata.validade) : null;
+    const tipoDocumento = metadata.tipoDocumento
+      ? metadata.tipoDocumento
+      : null;
+    console.log(tipoDocumento);
     const deleteUrl = `${baseUrl}/document/delete/${file.filename}`;
     const downloadUrl = `${baseUrl}/document/download/${file.filename}`;
     const viewUrl = `${baseUrl}/document/view/${file.filename}`;
@@ -26,16 +30,33 @@ export class DocumentService {
       viewUrl,
       deleteUrl,
     };
+
+    const data = {
+      clienteId: id,
+      ...(metadata.tipoDocumento && {
+        tipoDocumento: metadata.tipoDocumento,
+      }),
+      ...(metadata.numeroDocumento && {
+        numeroDocumento: metadata.numeroDocumento,
+      }),
+      ...(validade && { validade: validade }),
+      arquivoDocumento: JSON.stringify(urls),
+    };
+    console.log(data);
     try {
       const Exist = await this.ExistFile(id);
+      console.log(Exist);
 
       if (!Exist) {
+        console.log('aki');
         const req = await this.prismaService.document.create({
           data: {
             clienteId: id,
-            ...(metadata.tipoDocumento && {
-              tipoDocumento: metadata.tipoDocumento,
-            }),
+            ...(tipoDocumento
+              ? {
+                  tipoDocumento: tipoDocumento,
+                }
+              : ''),
             ...(metadata.numeroDocumento && {
               numeroDocumento: metadata.numeroDocumento,
             }),
@@ -43,6 +64,7 @@ export class DocumentService {
             arquivoDocumento: JSON.stringify(urls),
           },
         });
+        console.log('ta aqui:', req);
         return plainToClass(Document, req);
       }
 
@@ -62,9 +84,13 @@ export class DocumentService {
             },
             data: {
               clienteId: id,
-              tipoDocumento: metadata.tipoDocumento,
-              numeroDocumento: metadata.numeroDocumento,
-              validade: validade,
+              ...(metadata.tipoDocumento && {
+                tipoDocumento: metadata.tipoDocumento,
+              }),
+              ...(metadata.numeroDocumento && {
+                numeroDocumento: metadata.numeroDocumento,
+              }),
+              ...(validade && { validade: validade }),
               arquivoDocumento: JSON.stringify(urls),
             },
           });
@@ -76,9 +102,13 @@ export class DocumentService {
             },
             data: {
               clienteId: id,
-              tipoDocumento: metadata.tipoDocumento,
-              numeroDocumento: metadata.numeroDocumento,
-              validade: validade,
+              ...(metadata.tipoDocumento && {
+                tipoDocumento: metadata.tipoDocumento,
+              }),
+              ...(metadata.numeroDocumento && {
+                numeroDocumento: metadata.numeroDocumento,
+              }),
+              ...(validade && { validade: validade }),
               arquivoDocumento: JSON.stringify(urls),
             },
           });
