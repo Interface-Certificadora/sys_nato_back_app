@@ -33,4 +33,12 @@ export class UpdateDocumentDto {
   })
   @IsOptional()
   status: boolean;
+
+  @ApiProperty({
+    description: 'Arquivo do Documento',
+    example: 'https://example.com/dados',
+    type: String,
+  })
+  @IsOptional()
+  arquivoDocumento: string;
 }
