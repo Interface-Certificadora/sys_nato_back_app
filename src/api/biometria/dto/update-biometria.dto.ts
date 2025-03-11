@@ -16,10 +16,10 @@ export class UpdateBiometriaDto {
   @ApiProperty({
     description: 'Status da Biometria',
     example: true,
-    type: Boolean,
+    type: String,
   })
   @IsOptional()
-  status: boolean;
+  status: string;
 
   @ApiProperty({
     description: 'Dados Biometricos',

@@ -36,6 +36,7 @@ export class BiometriaService {
             clienteId: id,
             tipoBiometria: metadata.tipoBiometria,
             dadosBiometricos: JSON.stringify(urls),
+            status: 'ENVIADO',
           },
         });
         return plainToClass(Biometria, req);
