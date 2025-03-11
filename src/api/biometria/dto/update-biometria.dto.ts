@@ -20,4 +20,13 @@ export class UpdateBiometriaDto {
   })
   @IsOptional()
   status: boolean;
+
+  @ApiProperty({
+    description: 'Dados Biometricos',
+    example: 'https://example.com/dados',
+    type: String,
+  })
+  @IsOptional()
+  @IsString({ message: 'A url tem que ser uma string' })
+  dadosBiometricos?: string;
 }

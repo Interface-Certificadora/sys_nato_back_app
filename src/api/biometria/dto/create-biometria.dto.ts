@@ -30,5 +30,5 @@ export class CreateBiometriaDto {
   @IsOptional()
   @IsString({ message: 'A url tem que ser uma string' })
   @IsNotEmpty({ message: 'A url nao pode ser vazio' })
-  dadosBiometric?: string;
+  dadosBiometricos?: string;
 }
