@@ -45,7 +45,9 @@ export class ClienteService {
 
   async findAll(): Promise<Cliente[] | ErrorClienteEntity> {
     try {
-      const req = await this.prismaService.cliente.findMany();
+      const req = await this.prismaService.cliente.findMany({
+        orderBy: { id: 'desc' },
+      });
       if (req.length <= 0) {
         const retorno: ErrorClienteEntity = {
           message: 'Nenhum cliente encontrado',
