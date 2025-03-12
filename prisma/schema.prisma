@@ -48,21 +48,23 @@ model Cliente {
 model Biometria {
   id               Int      @id @default(autoincrement())
   tipoBiometria    String
-  dadosBiometricos String
+  dadosBiometricos String?
   criadoEm         DateTime @default(now())
   atualizadoEm     DateTime @updatedAt
   clienteId        Int      @unique
+  status           String?  @default("AGUARDANDO")
   cliente          Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 }
 
 model Document {
   id               Int       @id @default(autoincrement())
   validade         DateTime?
-  arquivoDocumento String
+  arquivoDocumento String?
   criadoEm         DateTime  @default(now())
   atualizadoEm     DateTime  @updatedAt
   clienteId        Int       @unique
   tipodocumento    String?
   numerodocumento  String?
+  status           String?   @default("AGUARDANDO")
   cliente          Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 }
