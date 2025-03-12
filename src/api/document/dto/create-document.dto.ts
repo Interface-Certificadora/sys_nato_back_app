@@ -36,4 +36,12 @@ export class CreateDocumentDto {
   })
   @IsOptional()
   validade: Date;
+
+  @ApiProperty({
+    description: 'Status do Documento',
+    example: true,
+    type: String,
+  })
+  @IsOptional()
+  status: string;
 }
