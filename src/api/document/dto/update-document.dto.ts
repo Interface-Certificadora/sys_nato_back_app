@@ -32,7 +32,7 @@ export class UpdateDocumentDto {
     type: Boolean,
   })
   @IsOptional()
-  status: boolean;
+  status: string;
 
   @ApiProperty({
     description: 'Arquivo do Documento',

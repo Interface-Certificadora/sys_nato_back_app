@@ -31,24 +31,11 @@ export class DocumentService {
       deleteUrl,
     };
 
-    const data = {
-      clienteId: id,
-      ...(metadata.tipoDocumento && {
-        tipoDocumento: metadata.tipoDocumento,
-      }),
-      ...(metadata.numeroDocumento && {
-        numeroDocumento: metadata.numeroDocumento,
-      }),
-      ...(validade && { validade: validade }),
-      arquivoDocumento: JSON.stringify(urls),
-    };
-    console.log(data);
     try {
       const Exist = await this.ExistFile(id);
       console.log(Exist);
 
       if (!Exist) {
-        console.log('aki');
         const req = await this.prismaService.document.create({
           data: {
             clienteId: id,
@@ -62,9 +49,9 @@ export class DocumentService {
             }),
             ...(validade && { validade: validade }),
             arquivoDocumento: JSON.stringify(urls),
+            status: 'ENVIADO',
           },
         });
-        console.log('ta aqui:', req);
         return plainToClass(Document, req);
       }
 
@@ -92,6 +79,7 @@ export class DocumentService {
               }),
               ...(validade && { validade: validade }),
               arquivoDocumento: JSON.stringify(urls),
+              status: 'ENVIADO',
             },
           });
           return plainToClass(Document, req);
@@ -110,6 +98,7 @@ export class DocumentService {
               }),
               ...(validade && { validade: validade }),
               arquivoDocumento: JSON.stringify(urls),
+              status: 'ENVIADO',
             },
           });
           return plainToClass(Document, req);
