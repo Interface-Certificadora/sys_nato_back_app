@@ -27,6 +27,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { randomUUID } from 'crypto';
 import { diskStorage } from 'multer';
 import { UpdateDocumentDto } from './dto/update-document.dto';
+import { StatusDocumentEntity } from './entities/status.document.entity';
 
 const UPLOADS_FOLDER = './documents';
 if (!fs.existsSync(UPLOADS_FOLDER)) {
@@ -228,5 +229,20 @@ export class DocumentController {
   })
   async findOneByClienteId(@Param('clienteId') id: string) {
     return await this.documentService.findOneByClienteId(+id);
+  }
+
+  @Get('/statusdoc/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna o status do documento',
+    type: StatusDocumentEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Documento nao encontrado',
+    type: ErrorDocumentEntity,
+  })
+  async statusDoc(@Param('id') id: string) {
+    return await this.documentService.statusDoc(+id);
   }
 }

@@ -8,6 +8,7 @@ import { ErrorDocumentEntity } from './entities/erro.document.entity';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Response } from 'express';
+import { StatusDocumentEntity } from './entities/status.document.entity';
 
 const UPLOADS_FOLDER = './documents';
 @Injectable()
@@ -290,6 +291,29 @@ export class DocumentService {
         },
       });
       return plainToClass(Document, req);
+    } catch (error) {
+      console.log(error);
+      const retorno: ErrorDocumentEntity = {
+        message: 'Erro ao buscar documento',
+      };
+      throw new HttpException(retorno, 400);
+    }
+  }
+
+  async statusDoc(id: number) {
+    try {
+      const req = await this.prismaService.document.findUnique({
+        where: {
+          clienteId: id,
+        },
+      });
+      if (!req) {
+        throw new HttpException('Documento nao encontrado', 404);
+      }
+      return plainToClass(
+        StatusDocumentEntity,
+        req.status ? req.status : 'AGUARDANDO',
+      );
     } catch (error) {
       console.log(error);
       const retorno: ErrorDocumentEntity = {

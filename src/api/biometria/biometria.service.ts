@@ -9,6 +9,7 @@ import * as path from 'path';
 import { Response } from 'express';
 import * as fs from 'fs';
 import * as mime from 'mime-types';
+import { StatusBiometriaEntity } from './entities/status.biometria.entity';
 
 const UPLOADS_FOLDER = path.join('./videos');
 @Injectable()
@@ -272,6 +273,26 @@ export class BiometriaService {
         },
       });
       return plainToClass(Biometria, req);
+    } catch (error) {
+      console.log(error);
+      const retorno: ErrorBiometriaEntity = {
+        message: 'Erro ao buscar biometria',
+      };
+      throw new HttpException(retorno, 400);
+    }
+  }
+
+  async getStatusBiometria(id: number) {
+    try {
+      const req = await this.prismaService.biometria.findUnique({
+        where: {
+          clienteId: id,
+        },
+      });
+      if (!req) {
+        throw new HttpException('Biometria nao encontrada', 404);
+      }
+      return plainToClass(StatusBiometriaEntity, req.status);
     } catch (error) {
       console.log(error);
       const retorno: ErrorBiometriaEntity = {
