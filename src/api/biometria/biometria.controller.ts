@@ -28,6 +28,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { randomUUID } from 'crypto';
 import { diskStorage } from 'multer';
 import { UpdateBiometriaDto } from './dto/update-biometria.dto';
+import { StatusBiometriaEntity } from './entities/status.biometria.entity';
 
 const UPLOADS_FOLDER = path.join('./videos');
 if (!fs.existsSync(UPLOADS_FOLDER)) {
@@ -215,5 +216,20 @@ export class BiometriaController {
   })
   async findOneByClienteId(@Param('clienteId') id: string) {
     return await this.biometriaService.findOneByClienteId(+id);
+  }
+
+  @Get('/statusbio/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna o status da biometria',
+    type: StatusBiometriaEntity,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Biometria nao encontrada',
+    type: ErrorBiometriaEntity,
+  })
+  async getStatusBiometria(@Param('id') id: string) {
+    return await this.biometriaService.getStatusBiometria(+id);
   }
 }
