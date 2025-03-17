@@ -29,4 +29,12 @@ export class UpdateBiometriaDto {
   @IsOptional()
   @IsString({ message: 'A url tem que ser uma string' })
   dadosBiometricos?: string;
+
+  @ApiProperty({
+    description: 'Motivo Rejeicao',
+    example: 'Motivo da biometria ter sido rejeitada',
+    type: String,
+  })
+  @IsOptional()
+  motivo?: string;
 }

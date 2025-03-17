@@ -53,6 +53,7 @@ model Biometria {
   atualizadoEm     DateTime @updatedAt
   clienteId        Int      @unique
   status           String?  @default("AGUARDANDO")
+  motivo           String?
   cliente          Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 }
 
@@ -66,5 +67,6 @@ model Document {
   tipodocumento    String?
   numerodocumento  String?
   status           String?   @default("AGUARDANDO")
+  motivo           String?
   cliente          Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 }

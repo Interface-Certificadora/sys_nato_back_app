@@ -13,6 +13,9 @@ export class Biometria {
   @ApiResponseProperty({ type: String })
   dadosBiometricos: string;
 
+  @ApiResponseProperty({ type: String })
+  motivo: string | null;
+
   constructor(partial: Partial<Biometria>) {
     Object.assign(this, partial);
   }

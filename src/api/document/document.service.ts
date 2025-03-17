@@ -51,6 +51,7 @@ export class DocumentService {
             ...(validade && { validade: validade }),
             arquivoDocumento: JSON.stringify(urls),
             status: 'ENVIADO',
+            motivo: null,
           },
         });
         return plainToClass(Document, req);
@@ -81,6 +82,7 @@ export class DocumentService {
               ...(validade && { validade: validade }),
               arquivoDocumento: JSON.stringify(urls),
               status: 'ENVIADO',
+              motivo: null,
             },
           });
           return plainToClass(Document, req);
@@ -100,6 +102,7 @@ export class DocumentService {
               ...(validade && { validade: validade }),
               arquivoDocumento: JSON.stringify(urls),
               status: 'ENVIADO',
+              motivo: null,
             },
           });
           return plainToClass(Document, req);
