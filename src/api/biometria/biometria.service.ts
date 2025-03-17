@@ -10,6 +10,8 @@ import { Response } from 'express';
 import * as fs from 'fs';
 import * as mime from 'mime-types';
 import { StatusBiometriaEntity } from './entities/status.biometria.entity';
+import { Cliente } from '../cliente/entities/cliente.entity';
+import WhatsApp from '../utils/whatsapp';
 
 const UPLOADS_FOLDER = path.join('./videos');
 @Injectable()
@@ -127,6 +129,53 @@ export class BiometriaService {
     updateBiometriaDto: UpdateBiometriaDto,
   ): Promise<Biometria | ErrorBiometriaEntity> {
     try {
+      const biometria = await this.prismaService.biometria.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!biometria) {
+        const retorno: ErrorBiometriaEntity = {
+          message: 'Biometria não encontrada',
+        };
+        throw new HttpException(retorno, 400);
+      }
+
+      const cliente: Cliente = await this.prismaService.cliente.findUnique({
+        where: {
+          id: biometria.clienteId,
+        },
+      });
+
+      if (!cliente) {
+        throw new HttpException('Cliente nao encontrado', 404);
+      }
+
+      const mensagem = `Olá, ${cliente.nome}! sua coleta Biometrica foi ${updateBiometriaDto.status === 'APROVADO' ? 'APROVADA' : 'REJEITADA'} ${updateBiometriaDto.status === 'REJEITADO' ? ` pelo seguinte motivo: ${updateBiometriaDto.motivo}\n Por Favor faça uma nova coleta no app.` : ', Parabens por ser aprovado!'}`;
+
+      if (updateBiometriaDto.status === 'APROVADO') {
+        const verify = await WhatsApp.verify(cliente.telefone);
+        if (verify && verify.status === 'VALID_WA_NUMBER') {
+          await WhatsApp.sendText(cliente.telefone, mensagem);
+        } else {
+          console.log(
+            `Numero inválido ou não registrado no WhatsApp: ${cliente.telefone}`,
+          );
+        }
+      }
+
+      if (updateBiometriaDto.status === 'REJEITADO') {
+        const verify = await WhatsApp.verify(cliente.telefone);
+        if (verify && verify.status === 'VALID_WA_NUMBER') {
+          await WhatsApp.sendText(cliente.telefone, mensagem);
+        } else {
+          console.log(
+            `Numero inválido ou não registrado no WhatsApp: ${cliente.telefone}`,
+          );
+        }
+      }
+
       const req = await this.prismaService.biometria.update({
         where: {
           id,
