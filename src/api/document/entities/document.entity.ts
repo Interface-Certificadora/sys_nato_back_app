@@ -25,6 +25,9 @@ export class Document {
   @ApiResponseProperty({ type: Date })
   atualizadoEm: Date;
 
+  @ApiResponseProperty({ type: String })
+  motivo: string | null;
+
   constructor(partial: Partial<Document>) {
     Object.assign(this, partial);
   }

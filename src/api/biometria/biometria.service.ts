@@ -38,6 +38,7 @@ export class BiometriaService {
             tipoBiometria: metadata.tipoBiometria,
             dadosBiometricos: JSON.stringify(urls),
             status: 'ENVIADO',
+            motivo: null,
           },
         });
         return plainToClass(Biometria, req);
@@ -62,6 +63,7 @@ export class BiometriaService {
               tipoBiometria: metadata.tipoBiometria,
               dadosBiometricos: JSON.stringify(urls),
               status: 'ENVIADO',
+              motivo: null,
             },
           });
           return plainToClass(Biometria, req);
@@ -75,6 +77,7 @@ export class BiometriaService {
               tipoBiometria: metadata.tipoBiometria,
               dadosBiometricos: JSON.stringify(urls),
               status: 'ENVIADO',
+              motivo: null,
             },
           });
           return plainToClass(Biometria, req);

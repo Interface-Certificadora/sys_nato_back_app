@@ -41,4 +41,12 @@ export class UpdateDocumentDto {
   })
   @IsOptional()
   arquivoDocumento: string;
+
+  @ApiProperty({
+    description: 'Motivo Rejeicao',
+    example: 'Motivo do documento ter sido rejeitado',
+    type: String,
+  })
+  @IsOptional()
+  motivo?: string;
 }
