@@ -9,6 +9,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { Response } from 'express';
 import { StatusDocumentEntity } from './entities/status.document.entity';
+import WhatsApp from '../utils/whatsapp';
+import { Cliente } from '../cliente/entities/cliente.entity';
 
 const UPLOADS_FOLDER = './documents';
 @Injectable()
@@ -215,6 +217,43 @@ export class DocumentService {
 
   async update(id: number, updateDocumentDto: UpdateDocumentDto) {
     try {
+      const documento = await this.prismaService.document.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!documento) {
+        throw new HttpException('Documento nao encontrado', 404);
+      }
+
+      const cliente: Cliente = await this.prismaService.cliente.findUnique({
+        where: {
+          id: documento.clienteId,
+        },
+      });
+
+      if (!cliente) {
+        throw new HttpException('Cliente nao encontrado', 404);
+      }
+
+      const mensagem = `Olá, ${cliente.nome}! seu Documento foi ${updateDocumentDto.status} ${updateDocumentDto.status === 'REJEITADO' ? ` pelo seguinte motivo: ${updateDocumentDto.motivo}.\n Por Favor Mande uma nova imagem no app.` : ', Parabens por ser aprovado!'}`;
+      if (updateDocumentDto.status === 'APROVADO') {
+        const verify = await WhatsApp.verify(cliente.telefone);
+        if (verify && verify.status === 'VALID_WA_NUMBER') {
+          await WhatsApp.sendText(cliente.telefone, mensagem);
+        } else {
+          console.log(
+            `Número inválido ou não registrado no WhatsApp: ${cliente.telefone}`,
+          );
+        }
+      }
+      if (updateDocumentDto.status === 'REJEITADO') {
+        const verify = await WhatsApp.verify(cliente.telefone);
+        if (verify && verify.status === 'VALID_WA_NUMBER') {
+          await WhatsApp.sendText(cliente.telefone, mensagem);
+        }
+      }
       const req = await this.prismaService.document.update({
         where: {
           id,
