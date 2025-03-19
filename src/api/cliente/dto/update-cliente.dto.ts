@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsNumber,
   IsDate,
+  Length,
 } from 'class-validator';
 
 export class UpdateClienteDto {
@@ -25,6 +26,7 @@ export class UpdateClienteDto {
     type: String,
     required: false,
   })
+  @Length(11, 11, { message: 'O CPF deve ter exatamente 11 caracteres' })
   @IsString()
   @IsOptional()
   cpf?: string;
