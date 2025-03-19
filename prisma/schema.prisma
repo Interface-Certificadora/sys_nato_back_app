@@ -43,6 +43,7 @@ model Cliente {
   statusdownload    String?    @default("\"AGUARDANDO\"")
   biometrias        Biometria?
   documentos        Document?
+  logs              String?
 }
 
 model Biometria {

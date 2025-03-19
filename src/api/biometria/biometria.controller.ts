@@ -10,6 +10,7 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { BiometriaService } from './biometria.service';
 import * as path from 'path';
@@ -98,6 +99,8 @@ export class BiometriaController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(LoginGuard)
   @ApiResponse({
     status: 200,
     description: 'Biometria atualizada com sucesso',
@@ -111,8 +114,13 @@ export class BiometriaController {
   async update(
     @Param('id') id: string,
     @Body() updateBiometriaDto: UpdateBiometriaDto,
+    @Req() req,
   ) {
-    return await this.biometriaService.update(+id, updateBiometriaDto);
+    return await this.biometriaService.update(
+      +id,
+      updateBiometriaDto,
+      req.user,
+    );
   }
 
   @Get('download/:filename')
@@ -197,8 +205,8 @@ export class BiometriaController {
     description: 'Biometria nao encontrada',
     type: ErrorBiometriaEntity,
   })
-  async remove(@Param('id') id: string) {
-    return await this.biometriaService.remove(+id);
+  async remove(@Param('id') id: string, @Req() req: any) {
+    return await this.biometriaService.remove(+id, req.user);
   }
 
   @Get('/cliente/:clienteId')

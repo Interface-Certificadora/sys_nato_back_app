@@ -127,6 +127,7 @@ export class BiometriaService {
   async update(
     id: number,
     updateBiometriaDto: UpdateBiometriaDto,
+    user: any,
   ): Promise<Biometria | ErrorBiometriaEntity> {
     try {
       const biometria = await this.prismaService.biometria.findUnique({
@@ -152,6 +153,7 @@ export class BiometriaService {
         throw new HttpException('Cliente nao encontrado', 404);
       }
 
+      const logs = cliente.logs;
       const mensagem = `Olá, ${cliente.nome}! sua coleta Biometrica foi ${updateBiometriaDto.status === 'APROVADO' ? 'APROVADA' : 'REJEITADA'} ${updateBiometriaDto.status === 'REJEITADO' ? ` pelo seguinte motivo: ${updateBiometriaDto.motivo}\n Por Favor faça uma nova coleta no app.` : ', Parabens por ser aprovado!'}`;
 
       if (updateBiometriaDto.status === 'APROVADO') {
@@ -184,6 +186,15 @@ export class BiometriaService {
           ...updateBiometriaDto,
         },
       });
+
+      await this.prismaService.cliente.update({
+        where: {
+          id: cliente.id,
+        },
+        data: {
+          logs: `${logs}\n o Usuario ${user.nome} atualizou a biometria DIA: ${new Date().toLocaleDateString('pt-BR')} HORA: ${new Date().toLocaleTimeString('pt-BR')}, foram alterados os campos: ${JSON.stringify(updateBiometriaDto)}\n`,
+        },
+      });
       return plainToClass(Biometria, req);
     } catch (error) {
       console.log(error);
@@ -194,7 +205,7 @@ export class BiometriaService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number, user: any) {
     try {
       const urls = await this.prismaService.biometria
         .findUnique({
@@ -213,6 +224,30 @@ export class BiometriaService {
       if (!delFile.ok) {
         throw new Error('Não foi possível deletar o arquivo');
       }
+      const biometria = await this.prismaService.biometria.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      const logs = await this.prismaService.cliente.findUnique({
+        where: {
+          id: biometria.clienteId,
+        },
+        select: {
+          logs: true,
+        },
+      });
+
+      await this.prismaService.cliente.update({
+        where: {
+          id: biometria.clienteId,
+        },
+        data: {
+          logs: `${logs.logs}\n o Usuario ${user.nome} deletou a biometria DIA: ${new Date().toLocaleDateString('pt-BR')} HORA: ${new Date().toLocaleTimeString('pt-BR')}\n`,
+        },
+      });
+
       const req = await this.prismaService.biometria.delete({
         where: {
           id,
