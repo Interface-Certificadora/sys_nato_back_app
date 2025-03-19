@@ -5,4 +5,9 @@ export class StatusDocumentEntity {
     type: String,
   })
   statusDocumento: string;
+
+  @ApiResponseProperty({
+    type: String,
+  })
+  motivo: string;
 }

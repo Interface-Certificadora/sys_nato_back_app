@@ -384,14 +384,16 @@ export class DocumentService {
         where: {
           clienteId: id,
         },
+        select: {
+          status: true,
+          motivo: true,
+        },
       });
       if (!req) {
         throw new HttpException('Documento nao encontrado', 404);
       }
-      return plainToClass(
-        StatusDocumentEntity,
-        req.status ? req.status : 'AGUARDANDO',
-      );
+
+      return plainToClass(StatusDocumentEntity, req);
     } catch (error) {
       console.log(error);
       const retorno: ErrorDocumentEntity = {

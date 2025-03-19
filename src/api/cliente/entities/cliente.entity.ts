@@ -73,6 +73,9 @@ export class Cliente {
   @ApiResponseProperty({ type: String })
   logs: string;
 
+  @ApiResponseProperty({ type: String })
+  motivo?: string;
+
   constructor(partial: Partial<Cliente>) {
     Object.assign(this, partial);
   }
