@@ -70,6 +70,9 @@ export class Cliente {
   @ApiResponseProperty({ type: String })
   statusdownload: string;
 
+  @ApiResponseProperty({ type: String })
+  logs: string;
+
   constructor(partial: Partial<Cliente>) {
     Object.assign(this, partial);
   }

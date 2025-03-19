@@ -10,6 +10,7 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { DocumentService } from './document.service';
 import {
@@ -111,6 +112,8 @@ export class DocumentController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(LoginGuard)
   @ApiResponse({
     status: 200,
     description: 'Documento atualizado com sucesso',
@@ -124,8 +127,9 @@ export class DocumentController {
   async update(
     @Param('id') id: string,
     @Body() updateDocumentDto: UpdateDocumentDto,
+    @Req() req: any,
   ) {
-    return await this.documentService.update(+id, updateDocumentDto);
+    return await this.documentService.update(+id, updateDocumentDto, req.user);
   }
 
   @Get('download/:filename')
@@ -210,8 +214,8 @@ export class DocumentController {
     description: 'Documento nao encontrado',
     type: ErrorDocumentEntity,
   })
-  async remove(@Param('id') id: string) {
-    return await this.documentService.remove(+id);
+  async remove(@Param('id') id: string, @Req() req: any) {
+    return await this.documentService.remove(+id, req.user);
   }
 
   @Get('cliente/:clienteId')

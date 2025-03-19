@@ -215,7 +215,7 @@ export class DocumentService {
     }
   }
 
-  async update(id: number, updateDocumentDto: UpdateDocumentDto) {
+  async update(id: number, updateDocumentDto: UpdateDocumentDto, user: any) {
     try {
       const documento = await this.prismaService.document.findUnique({
         where: {
@@ -237,6 +237,8 @@ export class DocumentService {
         throw new HttpException('Cliente nao encontrado', 404);
       }
 
+      const logs = cliente.logs;
+
       const mensagem = `Olá, ${cliente.nome}! seu Documento foi ${updateDocumentDto.status} ${updateDocumentDto.status === 'REJEITADO' ? ` pelo seguinte motivo: ${updateDocumentDto.motivo}.\n Por Favor Mande uma nova imagem no app.` : ', Parabens por ser aprovado!'}`;
       if (updateDocumentDto.status === 'APROVADO') {
         const verify = await WhatsApp.verify(cliente.telefone);
@@ -254,6 +256,16 @@ export class DocumentService {
           await WhatsApp.sendText(cliente.telefone, mensagem);
         }
       }
+
+      await this.prismaService.cliente.update({
+        where: {
+          id: cliente.id,
+        },
+        data: {
+          logs: `${logs}\n o Usuario ${user.nome} atualizou o documento DIA: ${new Date().toLocaleDateString('pt-BR')} HORA: ${new Date().toLocaleTimeString('pt-BR')}, foram alterados os campos: ${JSON.stringify(updateDocumentDto)}\n`,
+        },
+      });
+
       const req = await this.prismaService.document.update({
         where: {
           id,
@@ -272,7 +284,7 @@ export class DocumentService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number, user: any) {
     try {
       const urls = await this.prismaService.document
         .findUnique({
@@ -291,6 +303,30 @@ export class DocumentService {
       if (!delFile.ok) {
         throw new Error('Não foi possível deletar o arquivo');
       }
+      const documento = await this.prismaService.document.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      const logs = await this.prismaService.cliente.findUnique({
+        where: {
+          id: documento.clienteId,
+        },
+        select: {
+          logs: true,
+        },
+      });
+
+      await this.prismaService.cliente.update({
+        where: {
+          id: documento.clienteId,
+        },
+        data: {
+          logs: `${logs.logs}\n o Usuario ${user.nome} deletou o documento DIA: ${new Date().toLocaleDateString('pt-BR')} HORA: ${new Date().toLocaleTimeString('pt-BR')}\n`,
+        },
+      });
+
       const req = await this.prismaService.document.delete({
         where: {
           id,

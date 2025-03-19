@@ -7,6 +7,7 @@ import {
   Body,
   Patch,
   Post,
+  Req,
 } from '@nestjs/common';
 import { ClienteService } from './cliente.service';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
@@ -35,6 +36,8 @@ export class ClienteController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(LoginGuard)
   @ApiResponse({
     status: 200,
     description: 'Atualiza o cliente',
@@ -48,8 +51,9 @@ export class ClienteController {
   async update(
     @Param('id') id: string,
     @Body() updateClienteDto: UpdateClienteDto,
+    @Req() req: any,
   ) {
-    return await this.clienteService.update(+id, updateClienteDto);
+    return await this.clienteService.update(+id, updateClienteDto, req.user);
   }
 
   @Get('/cpf/:cpf')
@@ -68,8 +72,6 @@ export class ClienteController {
   }
 
   @Get()
-  @UseGuards(LoginGuard)
-  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Retorna todos os clientes',
@@ -114,8 +116,8 @@ export class ClienteController {
     description: 'Erro ao deletar o cliente',
     type: ErrorClienteEntity,
   })
-  remove(@Param('id') id: string) {
-    return this.clienteService.remove(+id);
+  remove(@Param('id') id: string, @Req() req: any) {
+    return this.clienteService.remove(+id, req.user);
   }
 
   @Patch('/link/:id')

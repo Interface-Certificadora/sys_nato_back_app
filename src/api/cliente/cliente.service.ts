@@ -88,13 +88,26 @@ export class ClienteService {
   async update(
     id: number,
     updateClienteDto: UpdateClienteDto,
+    user: any,
   ): Promise<Cliente | ErrorClienteEntity> {
     try {
+      const logs = await this.prismaService.cliente.findUnique({
+        where: {
+          id: id,
+        },
+        select: {
+          logs: true,
+        },
+      });
+
       const req = await this.prismaService.cliente.update({
         where: {
           id,
         },
-        data: updateClienteDto,
+        data: {
+          ...updateClienteDto,
+          logs: `${logs.logs}\n o Usuario ${user.nome} atualizou as Informaçes do cliente DIA: ${new Date().toLocaleDateString('pt-BR')} HORA: ${new Date().toLocaleTimeString('pt-BR')}, foram alterados os campos: ${JSON.stringify(updateClienteDto)}\n`,
+        },
       });
 
       if (!req) {
@@ -114,11 +127,24 @@ export class ClienteService {
     }
   }
 
-  async remove(id: number): Promise<Cliente | ErrorClienteEntity> {
+  async remove(id: number, user: any): Promise<Cliente | ErrorClienteEntity> {
     try {
-      const req = await this.prismaService.cliente.delete({
+      const logs = await this.prismaService.cliente.findUnique({
+        where: {
+          id: id,
+        },
+        select: {
+          logs: true,
+        },
+      });
+
+      const req = await this.prismaService.cliente.update({
         where: {
           id,
+        },
+        data: {
+          ativo: false,
+          logs: `${logs.logs}\n o Usuario ${user.nome} Desativou o cliente DIA: ${new Date().toLocaleDateString('pt-BR')} HORA: ${new Date().toLocaleTimeString('pt-BR')}\n`,
         },
       });
 
