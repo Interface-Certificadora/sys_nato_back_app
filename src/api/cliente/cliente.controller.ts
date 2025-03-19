@@ -16,6 +16,7 @@ import { ErrorClienteEntity } from './entities/erro.cliente.entity';
 import { LoginGuard } from '../login/login.guard';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
+import { UpdateEmailDto } from './dto/update-email.dto';
 @Controller('cliente')
 export class ClienteController {
   constructor(private readonly clienteService: ClienteService) {}
@@ -150,5 +151,23 @@ export class ClienteController {
   })
   async downloadStatus(@Param('token') token: string) {
     return await this.clienteService.downloadStatus(token);
+  }
+
+  @Patch('/email/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'Atualiza o email do cliente',
+    type: Cliente,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Erro ao atualizar o email do cliente',
+    type: ErrorClienteEntity,
+  })
+  async updateEmail(
+    @Param('id') id: string,
+    @Body() updateEmailDto: UpdateEmailDto,
+  ) {
+    return await this.clienteService.updateEmail(+id, updateEmailDto);
   }
 }

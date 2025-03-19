@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { plainToClass } from 'class-transformer';
 import { Cliente } from './entities/cliente.entity';
 import { JwtService } from '@nestjs/jwt';
+import { UpdateEmailDto } from './dto/update-email.dto';
 
 @Injectable()
 export class ClienteService {
@@ -253,6 +254,32 @@ export class ClienteService {
     } catch (error) {
       console.error('Token inválido:', error);
       return null;
+    }
+  }
+
+  async updateEmail(id: number, updateEmailDto: UpdateEmailDto) {
+    try {
+      const req = await this.prismaService.cliente.update({
+        where: {
+          id,
+        },
+        data: {
+          email: updateEmailDto.email,
+        },
+      });
+      if (!req) {
+        const retorno: ErrorClienteEntity = {
+          message: 'Nenhum cliente encontrado',
+        };
+        throw new HttpException(retorno, 404);
+      }
+      return plainToClass(Cliente, req);
+    } catch (error) {
+      console.log(error);
+      const retorno: ErrorClienteEntity = {
+        message: error.message ? error.message : 'Erro Desconhecido',
+      };
+      throw new HttpException(retorno, 500);
     }
   }
 }
