@@ -375,11 +375,13 @@ export class BiometriaService {
         where: {
           clienteId: id,
         },
+        select: {
+          status: true,
+          motivo: true,
+        },
       });
-      if (!req) {
-        throw new HttpException('Biometria nao encontrada', 404);
-      }
-      return plainToClass(StatusBiometriaEntity, req.status);
+
+      return plainToClass(StatusBiometriaEntity, req);
     } catch (error) {
       console.log(error);
       const retorno: ErrorBiometriaEntity = {
