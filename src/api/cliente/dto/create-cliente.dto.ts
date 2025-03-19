@@ -7,6 +7,7 @@ import {
   IsNumber,
   IsDate,
   IsNotEmpty,
+  Length,
 } from 'class-validator';
 
 export class CreateClienteDto {
@@ -26,6 +27,7 @@ export class CreateClienteDto {
   })
   @IsString()
   @IsNotEmpty({ message: 'O CPF não pode ser vazio' })
+  @Length(11, 11, { message: 'O CPF deve ter exatamente 11 caracteres' })
   cpf: string;
 
   @ApiProperty({
