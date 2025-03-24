@@ -390,7 +390,10 @@ export class DocumentService {
         },
       });
       if (!req) {
-        throw new HttpException('Documento nao encontrado', 404);
+        const retorno: ErrorDocumentEntity = {
+          message: 'AGUARDANDO',
+        };
+        throw new HttpException(retorno, 404);
       }
 
       return plainToClass(StatusDocumentEntity, req);
