@@ -381,13 +381,17 @@ export class BiometriaService {
         },
       });
       if (!req) {
-        throw new HttpException('AGUARDANDO', 200);
+        const retorno = {
+          status: 'AGUARDANDO',
+          motivo: null,
+        };
+        return plainToClass(StatusBiometriaEntity, retorno);
       }
       return plainToClass(StatusBiometriaEntity, req);
     } catch (error) {
       console.log(error);
       const retorno: ErrorBiometriaEntity = {
-        message: 'AGUARDANDO',
+        message: 'Erro ao buscar Biometria',
       };
       throw new HttpException(retorno, 400);
     }
