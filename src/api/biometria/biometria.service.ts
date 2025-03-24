@@ -390,7 +390,7 @@ export class BiometriaService {
     } catch (error) {
       console.log(error);
       const retorno: ErrorBiometriaEntity = {
-        message: 'Erro ao buscar biometria',
+        message: 'AGUARDANDO',
       };
       throw new HttpException(retorno, 400);
     }
