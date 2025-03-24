@@ -400,7 +400,7 @@ export class DocumentService {
     } catch (error) {
       console.log(error);
       const retorno: ErrorDocumentEntity = {
-        message: 'Erro ao buscar documento',
+        message: 'AGUARDANDO',
       };
       throw new HttpException(retorno, 400);
     }
