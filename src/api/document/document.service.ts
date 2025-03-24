@@ -390,14 +390,18 @@ export class DocumentService {
         },
       });
       if (!req) {
-        throw new HttpException('AGUARDANDO', 200);
+        const retorno = {
+          status: 'AGUARDANDO',
+          motivo: null,
+        };
+        return plainToClass(StatusDocumentEntity, retorno);
       }
 
       return plainToClass(StatusDocumentEntity, req);
     } catch (error) {
       console.log(error);
       const retorno: ErrorDocumentEntity = {
-        message: 'AGUARDANDO',
+        message: 'Erro ao buscar documento',
       };
       throw new HttpException(retorno, 400);
     }
