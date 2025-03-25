@@ -44,6 +44,7 @@ model Cliente {
   biometrias        Biometria?
   documentos        Document?
   logs              String?
+  termosdeuso       Boolean    @default(false)
 }
 
 model Biometria {

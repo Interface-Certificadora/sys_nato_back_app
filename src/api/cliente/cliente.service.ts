@@ -282,4 +282,35 @@ export class ClienteService {
       throw new HttpException(retorno, 500);
     }
   }
+  async termos(id: number) {
+    try {
+      const Existe = await this.prismaService.cliente.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!Existe) {
+        const retorno: ErrorClienteEntity = {
+          message: 'Nenhum cliente encontrado',
+        };
+        throw new HttpException(retorno, 404);
+      }
+      await this.prismaService.cliente.update({
+        where: {
+          id,
+        },
+        data: {
+          termosdeuso: true,
+        },
+      });
+      return new HttpException('Termos Aceitos', 200);
+    } catch (error) {
+      console.log(error);
+      const retorno: ErrorClienteEntity = {
+        message: error.message ? error.message : 'Erro Desconhecido',
+      };
+      throw new HttpException(retorno, 500);
+    }
+  }
 }
