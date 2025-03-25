@@ -170,4 +170,19 @@ export class ClienteController {
   ) {
     return await this.clienteService.updateEmail(+id, updateEmailDto);
   }
+
+  @Get('/termos/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'Termos aceitos pelo Cliente',
+    type: String,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Erro ao aceitar os termos de uso',
+    type: ErrorClienteEntity,
+  })
+  async termos(@Param('id') id: string) {
+    return await this.clienteService.termos(+id);
+  }
 }
