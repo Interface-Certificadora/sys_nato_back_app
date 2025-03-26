@@ -185,4 +185,19 @@ export class ClienteController {
   async termos(@Param('id') id: string) {
     return await this.clienteService.termos(+id);
   }
+
+  @Get('/termosstatus/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'Verifica se termos foi aceito pelo Cliente',
+    type: Boolean,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Erro ao aceitar os termos de uso',
+    type: ErrorClienteEntity,
+  })
+  async termosStatus(@Param('id') id: string) {
+    return await this.clienteService.termosStatus(+id);
+  }
 }
