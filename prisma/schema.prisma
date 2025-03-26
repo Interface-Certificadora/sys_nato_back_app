@@ -72,3 +72,10 @@ model Document {
   motivo           String?
   cliente          Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 }
+
+model Termos_e_condicoes {
+  id               Int       @id @default(autoincrement())
+  criadoEm         DateTime  @default(now())
+  atualizadoEm     DateTime  @updatedAt
+  termos           String?    
+}
