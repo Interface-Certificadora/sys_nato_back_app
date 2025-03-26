@@ -313,4 +313,30 @@ export class ClienteService {
       throw new HttpException(retorno, 500);
     }
   }
+
+  async termosStatus(id: number) {
+    try {
+      const Existe = await this.prismaService.cliente.findUnique({
+        where: {
+          id,
+        },
+        select: {
+          termosdeuso: true,
+        },
+      });
+      if (!Existe) {
+        const retorno: ErrorClienteEntity = {
+          message: 'Nenhum cliente encontrado',
+        };
+        throw new HttpException(retorno, 404);
+      }
+      return Existe;
+    } catch (error) {
+      console.log(error);
+      const retorno: ErrorClienteEntity = {
+        message: error.message ? error.message : 'Erro Desconhecido',
+      };
+      throw new HttpException(retorno, 500);
+    }
+  }
 }
