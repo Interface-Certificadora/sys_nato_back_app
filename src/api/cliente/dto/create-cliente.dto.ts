@@ -170,7 +170,7 @@ export class CreateClienteDto {
   construtora: string;
 
   @ApiProperty({
-    description: 'Empreendimento em formato JSON string',
+    description: '  endimento em formato JSON string',
     example:
       '{"id":55,"nome":"Nome Empreendimento","cidade":"Cidade","uf":"SP","tag":"NATO_"}',
     type: String,

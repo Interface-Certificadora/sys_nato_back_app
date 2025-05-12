@@ -11,10 +11,10 @@ import {
   UploadedFile,
   UseInterceptors,
   Req,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { BiometriaService } from './biometria.service';
-import * as path from 'path';
-import * as fs from 'fs';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -26,19 +26,16 @@ import { ErrorBiometriaEntity } from './entities/erro.biometria.entity';
 import { Response } from 'express';
 import { LoginGuard } from '../login/login.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { randomUUID } from 'crypto';
-import { diskStorage } from 'multer';
 import { UpdateBiometriaDto } from './dto/update-biometria.dto';
 import { StatusBiometriaEntity } from './entities/status.biometria.entity';
-
-const UPLOADS_FOLDER = path.join('./videos');
-if (!fs.existsSync(UPLOADS_FOLDER)) {
-  fs.mkdirSync(UPLOADS_FOLDER, { recursive: true });
-}
+import { S3Service } from 'src/s3/s3.service';
 
 @Controller('biometria')
 export class BiometriaController {
-  constructor(private readonly biometriaService: BiometriaService) {}
+  constructor(
+    private readonly biometriaService: BiometriaService,
+    private S3: S3Service,
+  ) {}
 
   @Post('')
   @ApiConsumes('multipart/form-data')
@@ -63,24 +60,25 @@ export class BiometriaController {
   })
   @ApiResponse({ status: 201, description: 'Vídeo enviado com sucesso' })
   @ApiResponse({ status: 400, description: 'Erro ao salvar o vídeo' })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: UPLOADS_FOLDER,
-        filename: (req, file, callback) => {
-          const uniqueId = randomUUID();
-          const originalName = file.originalname.replace(/\s+/g, '_');
-          const filename = `${uniqueId}_${originalName}`;
-          callback(null, filename);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file'))
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body() data: { metadata: string },
   ) {
-    return this.biometriaService.create(file, JSON.parse(data.metadata));
+    if (file) {
+      const Ext = file.originalname.split('.').pop();
+      const NewName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${Ext}`;
+
+      this.S3.uploadFile('app-biometrias', NewName, file.mimetype, file.buffer);
+
+      return this.biometriaService.create(
+        file,
+        JSON.parse(data.metadata),
+        NewName,
+      );
+    } else {
+      return new HttpException('Arquivo nao encontrado', 404);
+    }
   }
 
   @Delete('delete/:filename')
@@ -139,7 +137,15 @@ export class BiometriaController {
     @Param('filename') filename: string,
     @Res() res: Response,
   ) {
-    return await this.biometriaService.downloadFile(filename, res);
+    if (!filename) {
+      throw new HttpException('Arquivo não encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    const file = await this.S3.downloadFile('app-biometrias', filename);
+    const Mine = file.ContentType;
+    res.set('Content-Type', Mine || 'application/octet-stream');
+    res.set('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(file.buffer);
   }
 
   @Get('view/:filename')
@@ -155,7 +161,12 @@ export class BiometriaController {
     type: ErrorBiometriaEntity,
   })
   async viewFile(@Param('filename') filename: string, @Res() res: Response) {
-    return await this.biometriaService.viewFile(filename, res);
+    if (!filename) {
+      throw new HttpException('Arquivo não encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    const s3file = await this.S3.getFileUrl('app-biometrias', filename);
+    return res.redirect(s3file);
   }
 
   @Get()
