@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -11,12 +11,20 @@ import { Response } from 'express';
 import { StatusDocumentEntity } from './entities/status.document.entity';
 import WhatsApp from '../utils/whatsapp';
 import { Cliente } from '../cliente/entities/cliente.entity';
+import { S3Service } from 'src/s3/s3.service';
 
 const UPLOADS_FOLDER = './documents';
 @Injectable()
 export class DocumentService {
-  constructor(private readonly prismaService: PrismaService) {}
-  async create(file: Express.Multer.File, metadata: CreateDocumentDto) {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private S3: S3Service,
+  ) {}
+  async create(
+    file: Express.Multer.File,
+    metadata: CreateDocumentDto,
+    NewName?: string,
+  ) {
     const id = metadata.clienteId;
     const baseUrl = process.env.API_ROUTE;
     const validade = metadata.validade ? new Date(metadata.validade) : null;
@@ -24,9 +32,9 @@ export class DocumentService {
       ? metadata.tipoDocumento
       : null;
     console.log(tipoDocumento);
-    const deleteUrl = `${baseUrl}/document/delete/${file.filename}`;
-    const downloadUrl = `${baseUrl}/document/download/${file.filename}`;
-    const viewUrl = `${baseUrl}/document/view/${file.filename}`;
+    const deleteUrl = `${baseUrl}/document/delete/${NewName}`;
+    const downloadUrl = `${baseUrl}/document/download/${NewName}`;
+    const viewUrl = `${baseUrl}/document/view/${NewName}`;
 
     const urls = {
       downloadUrl,
@@ -120,58 +128,14 @@ export class DocumentService {
     }
   }
 
-  async downloadFile(filename: string, res: Response) {
-    try {
-      const filePath = path.join(UPLOADS_FOLDER, filename);
-
-      if (!fs.existsSync(filePath)) {
-        throw new Error('Arquivo nao encontrado');
-      }
-
-      res.setHeader(
-        'Content-Disposition',
-        `attachment; filename="${filename}"`,
-      );
-      res.setHeader('Content-Type', 'application/octet-stream');
-
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
-    } catch (error) {
-      console.log(error);
-      const retorno: ErrorDocumentEntity = {
-        message: error.message,
-      };
-      throw new HttpException(retorno, 400);
-    }
-  }
-
-  async viewFile(filename: string, res: Response) {
-    try {
-      const filePath = path.join(UPLOADS_FOLDER, filename);
-      if (!fs.existsSync(filePath)) {
-        throw new Error('Arquivo nao encontrado');
-      }
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
-    } catch (error) {
-      console.log(error);
-      const retorno: ErrorDocumentEntity = {
-        message: 'Arquivo nao encontrado',
-      };
-      throw new HttpException(retorno, 400);
-    }
-  }
-
   async deleteFile(
     filename: string,
   ): Promise<HttpException | ErrorDocumentEntity> {
     try {
-      const filePath = path.join(UPLOADS_FOLDER, filename);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      } else {
-        throw new Error('Arquivo nao encontrado');
+      if (!filename) {
+        throw new HttpException('Arquivo não encontrado', HttpStatus.NOT_FOUND);
       }
+      await this.S3.deleteAllFiles('app-documents', filename);
       return new HttpException('Arquivo deletado com sucesso', 200);
     } catch (error) {
       console.log(error);

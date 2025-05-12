@@ -11,6 +11,8 @@ import {
   UploadedFile,
   UseInterceptors,
   Req,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { DocumentService } from './document.service';
 import {
@@ -29,15 +31,14 @@ import { randomUUID } from 'crypto';
 import { diskStorage } from 'multer';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { StatusDocumentEntity } from './entities/status.document.entity';
-
-const UPLOADS_FOLDER = './documents';
-if (!fs.existsSync(UPLOADS_FOLDER)) {
-  fs.mkdirSync(UPLOADS_FOLDER, { recursive: true });
-}
+import { S3Service } from 'src/s3/s3.service';
 
 @Controller('document')
 export class DocumentController {
-  constructor(private readonly documentService: DocumentService) {}
+  constructor(
+    private readonly documentService: DocumentService,
+    private S3: S3Service,
+  ) {}
 
   @Post('')
   @ApiConsumes('multipart/form-data')
@@ -76,24 +77,25 @@ export class DocumentController {
     description: 'Erro ao salvar o Arquivo',
     type: ErrorDocumentEntity,
   })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: UPLOADS_FOLDER,
-        filename: (req, file, callback) => {
-          const uniqueId = randomUUID();
-          const originalName = file.originalname.replace(/\s+/g, '_');
-          const filename = `${uniqueId}_${originalName}`;
-          callback(null, filename);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file'))
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body() data: { metadata: string },
   ) {
-    return this.documentService.create(file, JSON.parse(data.metadata));
+    if (file) {
+      const Ext = file.originalname.split('.').pop();
+      const NewName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${Ext}`;
+
+      this.S3.uploadFile('app-documents', NewName, file.mimetype, file.buffer);
+
+      return this.documentService.create(
+        file,
+        JSON.parse(data.metadata),
+        NewName,
+      );
+    } else {
+      return new HttpException('Arquivo nao encontrado', 404);
+    }
   }
 
   @Delete('delete/:filename')
@@ -146,14 +148,20 @@ export class DocumentController {
   })
   async downloadFile(
     @Param('filename') filename: string,
-    @Res() res: Response,
+    @Res() resp: Response,
   ) {
-    return await this.documentService.downloadFile(filename, res);
+    if (!filename) {
+      throw new HttpException('Arquivo não encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    const file = await this.S3.downloadFile('app-documents', filename);
+    const Mine = file.ContentType;
+    resp.set('Content-Type', Mine || 'application/octet-stream');
+    resp.set('Content-Disposition', `attachment; filename="${filename}"`);
+    resp.send(file.buffer);
   }
 
   @Get('view/:filename')
-  // @UseGuards(LoginGuard)
-  // @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: 'Arquivo encontrado para visualização',
@@ -164,7 +172,12 @@ export class DocumentController {
     type: ErrorDocumentEntity,
   })
   async viewFile(@Param('filename') filename: string, @Res() res: Response) {
-    return await this.documentService.viewFile(filename, res);
+    if (!filename) {
+      throw new HttpException('Arquivo não encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    const s3file = await this.S3.getFileUrl('app-documents', filename);
+    return res.redirect(s3file);
   }
 
   @Get()

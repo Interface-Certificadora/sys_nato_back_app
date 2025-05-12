@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateBiometriaDto } from './dto/create-biometria.dto';
 import { UpdateBiometriaDto } from './dto/update-biometria.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -12,12 +12,20 @@ import * as mime from 'mime-types';
 import { StatusBiometriaEntity } from './entities/status.biometria.entity';
 import { Cliente } from '../cliente/entities/cliente.entity';
 import WhatsApp from '../utils/whatsapp';
+import { S3Service } from 'src/s3/s3.service';
 
 const UPLOADS_FOLDER = path.join('./videos');
 @Injectable()
 export class BiometriaService {
-  constructor(private readonly prismaService: PrismaService) {}
-  async create(file: Express.Multer.File, metadata: CreateBiometriaDto) {
+  constructor(
+    private readonly prismaService: PrismaService,
+    private S3: S3Service,
+  ) {}
+  async create(
+    file: Express.Multer.File,
+    metadata: CreateBiometriaDto,
+    NewName?: string,
+  ) {
     const id = metadata.clienteId;
     const baseUrl = process.env.API_ROUTE;
 
@@ -165,6 +173,7 @@ export class BiometriaService {
             `Numero inválido ou não registrado no WhatsApp: ${cliente.telefone}`,
           );
         }
+        ('');
       }
 
       if (updateBiometriaDto.status === 'REJEITADO') {
@@ -266,12 +275,10 @@ export class BiometriaService {
 
   async deleteFile(filename: string) {
     try {
-      const filePath = path.join(UPLOADS_FOLDER, filename);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      } else {
-        throw new Error('Arquivo nao encontrado');
+      if (!filename) {
+        throw new HttpException('Arquivo não encontrado', HttpStatus.NOT_FOUND);
       }
+      await this.S3.deleteAllFiles('app-biometrias', filename);
       return new HttpException('Arquivo deletado com sucesso', 200);
     } catch (error) {
       console.log(error);
@@ -295,60 +302,6 @@ export class BiometriaService {
       return req[0];
     } catch (error) {
       return error;
-    }
-  }
-
-  async downloadFile(filename: string, res: Response) {
-    try {
-      const filePath = path.join(UPLOADS_FOLDER, filename);
-
-      if (!fs.existsSync(filePath)) {
-        throw new Error('Arquivo nao encontrado');
-      }
-
-      res.setHeader(
-        'Content-Disposition',
-        `attachment; filename="${filename}"`,
-      );
-      res.setHeader('Content-Type', 'application/octet-stream');
-
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
-    } catch (error) {
-      console.log(error);
-      const retorno: ErrorBiometriaEntity = {
-        message: error.message,
-      };
-      throw new HttpException(retorno, 400);
-    }
-  }
-
-  async viewFile(filename: string, res: Response) {
-    try {
-      const filePath = path.join(UPLOADS_FOLDER, filename);
-
-      if (!fs.existsSync(filePath)) {
-        throw new Error('Arquivo nao encontrado');
-      }
-
-      // Determina o tipo do arquivo
-      const mimeType = mime.lookup(filePath);
-      if (!mimeType) {
-        throw new Error('Tipo de arquivo não suportado');
-      }
-
-      // Define o cabeçalho com o tipo correto
-      res.setHeader('Content-Type', mimeType);
-
-      // Envia o arquivo
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
-    } catch (error) {
-      console.log(error);
-      const retorno = {
-        message: 'Arquivo nao encontrado',
-      };
-      throw new HttpException(retorno, 400);
     }
   }
 

@@ -6,6 +6,7 @@ import { DocumentModule } from './api/document/document.module';
 import { ClienteModule } from './api/cliente/cliente.module';
 import { LoginModule } from './api/login/login.module';
 import { CondicoesModule } from './api/condicoes/condicoes.module';
+import { S3Module } from './s3/s3.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CondicoesModule } from './api/condicoes/condicoes.module';
     ClienteModule,
     LoginModule,
     CondicoesModule,
+    S3Module,
   ],
   controllers: [],
   providers: [PrismaService],
