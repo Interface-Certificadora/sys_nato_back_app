@@ -29,9 +29,9 @@ export class BiometriaService {
     const id = metadata.clienteId;
     const baseUrl = process.env.API_ROUTE;
 
-    const deleteUrl = `${baseUrl}/biometria/delete/${file.filename}`;
-    const downloadUrl = `${baseUrl}/biometria/download/${file.filename}`;
-    const viewUrl = `${baseUrl}/biometria/view/${file.filename}`;
+    const deleteUrl = `${baseUrl}/biometria/delete/${NewName}`;
+    const downloadUrl = `${baseUrl}/biometria/download/${NewName}`;
+    const viewUrl = `${baseUrl}/biometria/view/${NewName}`;
 
     const urls = {
       downloadUrl,
