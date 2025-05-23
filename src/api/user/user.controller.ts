@@ -21,6 +21,8 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @UseGuards(LoginGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 201,
     description: 'Cadastra um novo usuário',
