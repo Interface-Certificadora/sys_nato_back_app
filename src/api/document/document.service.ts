@@ -5,11 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Document } from './entities/document.entity';
 import { plainToClass } from 'class-transformer';
 import { ErrorDocumentEntity } from './entities/erro.document.entity';
-import * as path from 'path';
-import * as fs from 'fs';
-import { Response } from 'express';
 import { StatusDocumentEntity } from './entities/status.document.entity';
-import WhatsApp from '../utils/whatsapp';
 import { Cliente } from '../cliente/entities/cliente.entity';
 import { S3Service } from 'src/s3/s3.service';
 
@@ -203,23 +199,23 @@ export class DocumentService {
 
       const logs = cliente.logs;
 
-      const mensagem = `Olá, ${cliente.nome}! seu Documento foi ${updateDocumentDto.status} ${updateDocumentDto.status === 'REJEITADO' ? ` pelo seguinte motivo: ${updateDocumentDto.motivo}.\n Por Favor Mande uma nova imagem no app.` : ', Parabens por ser aprovado!'}`;
-      if (updateDocumentDto.status === 'APROVADO') {
-        const verify = await WhatsApp.verify(cliente.telefone);
-        if (verify && verify.status === 'VALID_WA_NUMBER') {
-          await WhatsApp.sendText(cliente.telefone, mensagem);
-        } else {
-          console.log(
-            `Número inválido ou não registrado no WhatsApp: ${cliente.telefone}`,
-          );
-        }
-      }
-      if (updateDocumentDto.status === 'REJEITADO') {
-        const verify = await WhatsApp.verify(cliente.telefone);
-        if (verify && verify.status === 'VALID_WA_NUMBER') {
-          await WhatsApp.sendText(cliente.telefone, mensagem);
-        }
-      }
+      // const mensagem = `Olá, ${cliente.nome}! seu Documento foi ${updateDocumentDto.status} ${updateDocumentDto.status === 'REJEITADO' ? ` pelo seguinte motivo: ${updateDocumentDto.motivo}.\n Por Favor Mande uma nova imagem no app.` : ', Parabens por ser aprovado!'}`;
+      // if (updateDocumentDto.status === 'APROVADO') {
+      //   const verify = await WhatsApp.verify(cliente.telefone);
+      //   if (verify && verify.status === 'VALID_WA_NUMBER') {
+      //     await WhatsApp.sendText(cliente.telefone, mensagem);
+      //   } else {
+      //     console.log(
+      //       `Número inválido ou não registrado no WhatsApp: ${cliente.telefone}`,
+      //     );
+      //   }
+      // }
+      // if (updateDocumentDto.status === 'REJEITADO') {
+      //   const verify = await WhatsApp.verify(cliente.telefone);
+      //   if (verify && verify.status === 'VALID_WA_NUMBER') {
+      //     await WhatsApp.sendText(cliente.telefone, mensagem);
+      //   }
+      // }
 
       await this.prismaService.cliente.update({
         where: {
