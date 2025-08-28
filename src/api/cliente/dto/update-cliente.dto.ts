@@ -173,4 +173,14 @@ export class UpdateClienteDto {
   @IsString()
   @IsOptional()
   financeiro?: string;
+
+  @ApiProperty({
+    description: 'idFcweb em number',
+    example: 1,
+    type: Number,
+    required: false,
+  })
+  @IsNumber()
+  @IsOptional()
+  idFcw?: number;
 }

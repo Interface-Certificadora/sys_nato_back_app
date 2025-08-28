@@ -81,7 +81,7 @@ export class CreateClienteDto {
 
   @ApiProperty({ description: 'ID FCW', example: 41359, type: Number })
   @IsNumber()
-  @IsNotEmpty({ message: 'O ID FCW não pode ser vazio' })
+  @IsOptional()
   idFcw: number;
 
   @ApiProperty({ description: 'Status ativo', example: true, type: Boolean })
@@ -100,13 +100,13 @@ export class CreateClienteDto {
 
   @ApiProperty({
     description: 'Status de pagamento',
-    example: '',
-    type: String,
+    example: 0,
+    type: Number,
     required: false,
   })
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  statusPgto?: string;
+  statusPgto?: number;
 
   @ApiProperty({
     description: 'Valor do certificado',
