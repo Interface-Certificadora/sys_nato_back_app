@@ -34,8 +34,8 @@ export class Cliente {
   @ApiResponseProperty({ type: String })
   andamento: string;
 
-  @ApiResponseProperty({ type: String })
-  statusPgto?: string;
+  @ApiResponseProperty({ type: Number })
+  statusPgto?: number;
 
   @ApiResponseProperty({ type: Number })
   valorCd: number;

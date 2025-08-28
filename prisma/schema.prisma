@@ -26,10 +26,9 @@ model Cliente {
   telefone2         String?
   dtNascimento      DateTime?
   dtSolicitacao     DateTime
-  idFcw             Int
+  idFcw             Int?
   ativo             Boolean    @default(true)
   andamento         String
-  statusPgto        String?
   valorCd           Int
   docSuspenso       String?
   alertaNow         Boolean    @default(false)
@@ -40,11 +39,12 @@ model Cliente {
   empreendimento    String
   financeiro        String
   linkdownload      String?
+  logs              String?
   statusdownload    String?    @default("\"AGUARDANDO\"")
+  termosdeuso       Boolean    @default(false)
+  statusPgto        Int?
   biometrias        Biometria?
   documentos        Document?
-  logs              String?
-  termosdeuso       Boolean    @default(false)
 }
 
 model Biometria {
@@ -54,8 +54,8 @@ model Biometria {
   criadoEm         DateTime @default(now())
   atualizadoEm     DateTime @updatedAt
   clienteId        Int      @unique
-  status           String?  @default("AGUARDANDO")
   motivo           String?
+  status           String?  @default("AGUARDANDO")
   cliente          Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 }
 
@@ -66,16 +66,16 @@ model Document {
   criadoEm         DateTime  @default(now())
   atualizadoEm     DateTime  @updatedAt
   clienteId        Int       @unique
-  tipodocumento    String?
+  motivo           String?
   numerodocumento  String?
   status           String?   @default("AGUARDANDO")
-  motivo           String?
+  tipodocumento    String?
   cliente          Cliente   @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 }
 
 model Termos_e_condicoes {
-  id               Int       @id @default(autoincrement())
-  criadoEm         DateTime  @default(now())
-  atualizadoEm     DateTime  @updatedAt
-  termos           String?    
+  id           Int      @id @default(autoincrement())
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+  termos       String?
 }

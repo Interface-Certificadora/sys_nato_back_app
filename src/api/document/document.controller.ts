@@ -78,7 +78,7 @@ export class DocumentController {
     type: ErrorDocumentEntity,
   })
   @UseInterceptors(FileInterceptor('file'))
-  async create(
+  async create( 
     @UploadedFile() file: Express.Multer.File,
     @Body() data: { metadata: string },
   ) {
