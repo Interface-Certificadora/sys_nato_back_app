@@ -10,7 +10,6 @@ import { StatusBiometriaEntity } from './entities/status.biometria.entity';
 import { Cliente } from '../cliente/entities/cliente.entity';
 import { S3Service } from 'src/s3/s3.service';
 
-const UPLOADS_FOLDER = path.join('./videos');
 @Injectable()
 export class BiometriaService {
   constructor(
@@ -158,7 +157,6 @@ export class BiometriaService {
       }
 
       const logs = cliente.logs;
-      const mensagem = `Olá, ${cliente.nome}! sua coleta Biometrica foi ${updateBiometriaDto.status === 'APROVADO' ? 'APROVADA' : 'REJEITADA'} ${updateBiometriaDto.status === 'REJEITADO' ? ` pelo seguinte motivo: ${updateBiometriaDto.motivo}\n Por Favor faça uma nova coleta no app.` : ', Parabens por ser aprovado!'}`;
 
       // if (updateBiometriaDto.status === 'APROVADO') {
       //   const verify = await WhatsApp.verify(cliente.telefone);
